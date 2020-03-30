@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#0E0F1A">
+    <!--android:src="@mipmap/logo"-->
+    <ImageView
+        android:id="@+id/login_log"
+        android:layout_width="162dp"
+        android:layout_height="53dp"
+        android:layout_marginTop="73dp"
+        android:layout_centerHorizontal="true"
+        />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="165dp"
+        android:orientation="horizontal"
+        android:layout_centerHorizontal="true"
+        >
+        <TextView
+            android:id="@+id/tv_lan"
+            android:layout_width="120dp"
+            android:layout_height="31dp"
+            android:text="局域网"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@mipmap/left_blue_bg"
+            />
+        <TextView
+            android:id="@+id/tv_wan"
+            android:layout_width="120dp"
+            android:layout_height="31dp"
+            android:text="广域网"
+            android:textColor="@color/white"
+            android:textStyle="bold"
+            android:textSize="14sp"
+            android:gravity="center"
+            android:background="@mipmap/right_black_bg"
+            />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layout_login"
+        android:layout_width="276dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/login_log"
+        android:layout_marginTop="136dp"
+        android:orientation="vertical"
+        android:layout_centerHorizontal="true">
+
+        <RelativeLayout
+            android:id="@+id/layout_account"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            >
+            <ImageView
+                android:id="@+id/iv_account"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:src="@mipmap/account" />
+
+            <EditText
+                android:id="@+id/account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/iv_account"
+                android:layout_marginLeft="17dp"
+                android:layout_marginTop="6dp"
+                android:background="@null"
+                android:hint="账号"
+                android:text="admin"
+                android:gravity="center_vertical"
+                android:inputType="none"
+                android:textColor="@color/fontColor"
+                android:textColorHint="@color/fontColor"
+                android:textSize="13sp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/line" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/layout_password"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_marginTop="52dp"
+            android:focusable="true"
+            android:focusableInTouchMode="true"
+            >
+            <ImageView
+                android:id="@+id/iv_password"
+                android:layout_width="25dp"
+                android:layout_height="25dp"
+                android:layout_alignParentLeft="true"
+                android:src="@mipmap/password" />
+
+            <ddr.example.com.newretailandroidclient.widget.edit.PasswordEditText
+                android:id="@+id/password"
+                style="@style/EditTextStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_toRightOf="@id/iv_password"
+                android:layout_marginLeft="7dp"
+                android:background="@null"
+                android:hint="密码"
+                android:textColor="@color/fontColor"
+                android:textColorHint="@color/fontColor"
+                android:textSize="13sp"
+                android:focusable="true"
+                android:focusableInTouchMode="true"
+                app:regexType="english" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/line" />
+        </RelativeLayout>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/login_in"
+        android:layout_width="249dp"
+        android:layout_height="44dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="登录"
+        android:textSize="18dp"
+        android:textColor="@color/white"
+        android:background="@drawable/button_bg_selector"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="75dp"
+
+        />
+
+
+</RelativeLayout>
