@@ -126,5 +126,9 @@
         <item name="android:windowEnterAnimation">@anim/dialog_right_in</item>
         <item name="android:windowExitAnimation">@anim/dialog_right_out</item>
     </style>
+    <declare-styleable name="MaxWidthRecycle">
+        <attr name="maxWidth" format="dimension" />
+    </declare-styleable>
+
 
 </resources>

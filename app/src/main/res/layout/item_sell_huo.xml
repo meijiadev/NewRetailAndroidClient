@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="146dp"
+    android:layout_height="188dp" android:background="#ffffff"
+    android:layout_marginTop="30dp">
+    <TextView
+        android:layout_width="146dp"
+        android:layout_height="24dp"
+        android:textColor="#454555"
+        android:textSize="14sp"
+        android:layout_marginTop="7.5dp"
+        android:gravity="center"
+        android:id="@+id/tv_huo_num"
+        />
+    <ImageView
+        android:layout_width="87.5dp"
+        android:layout_height="87.5dp"
+        android:src="@mipmap/cocokele"
+        android:layout_marginTop="50.5dp"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/iv_huo_image"/>
+    <TextView
+        android:layout_width="146dp"
+        android:layout_height="24dp"
+        android:textColor="#454555"
+        android:textSize="14sp"
+        android:layout_marginTop="151dp"
+        android:gravity="center"
+        android:id="@+id/tv_huo_name"/>
+
+</RelativeLayout>

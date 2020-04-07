@@ -13,49 +13,40 @@
         android:layout_height="60dp"
         android:background="#101112">
         <!--大道智创客户端-->
-        <TextView
-            android:layout_width="136dp"
-            android:layout_height="22.5dp"
-            android:text=""
-            android:textSize="16dp"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="16dp"
-            android:textColor="#ffffff"/>
+
         <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
             android:layout_width="83dp"
             android:layout_height="match_parent"
-            android:id="@+id/status"
             android:text="基础状态"
             android:textSize="12sp"
-            android:layout_centerInParent="true"
-            android:layout_toLeftOf="@id/mapmanager"
-            android:layout_marginRight="34dp"
             android:textColor="#ffffff"
+            android:layout_marginLeft="36dp"
             android:gravity="center"
             android:drawableLeft="@mipmap/status_def"
+            android:id="@+id/status"
             />
         <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
-            android:id="@+id/mapmanager"
             android:layout_width="82dp"
             android:layout_height="match_parent"
-            android:layout_centerInParent="true"
-            android:layout_marginRight="34dp"
-            android:layout_toLeftOf="@id/taskmanager"
             android:drawableLeft="@mipmap/map_def"
             android:gravity="center"
             android:text="地图管理"
             android:textColor="#ffffff"
-            android:textSize="12sp" />
+            android:textSize="12sp"
+            android:layout_toRightOf="@id/status"
+            android:layout_marginLeft="34dp"
+            android:id="@+id/mapmanager"/>
         <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
             android:layout_width="83dp"
             android:layout_height="match_parent"
-            android:id="@+id/taskmanager"
             android:text="任务管理"
             android:textSize="12sp"
-            android:layout_centerInParent="true"
             android:textColor="#ffffff"
             android:gravity="center"
-            android:drawableLeft="@mipmap/task_def"/>
+            android:drawableLeft="@mipmap/task_def"
+            android:layout_toRightOf="@id/mapmanager"
+            android:layout_marginLeft="34dp"
+            android:id="@+id/taskmanager"/>
         <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
             android:layout_width="83dp"
             android:layout_height="match_parent"
@@ -63,11 +54,22 @@
             android:text="高级设置"
             android:textSize="12sp"
             android:layout_toRightOf="@id/taskmanager"
-            android:layout_centerInParent="true"
             android:layout_marginLeft="34dp"
             android:textColor="#ffffff"
             android:gravity="center"
             android:drawableLeft="@mipmap/hightset_def"
+            />
+        <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+            android:layout_width="83dp"
+            android:layout_height="match_parent"
+            android:id="@+id/sell_data"
+            android:text="售卖数据"
+            android:textSize="12sp"
+            android:layout_toRightOf="@id/highset"
+            android:layout_marginLeft="34dp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:drawableLeft="@mipmap/retail_data_def"
             />
         <TextView
             android:layout_width="wrap_content"
@@ -107,9 +109,24 @@
             android:layout_height="31dp"
             android:background="#262728"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/tv_shutdown"
+            android:layout_toLeftOf="@id/tv_change"
             android:layout_marginRight="18dp"
             ></View>
+        <TextView
+            android:id="@+id/tv_change"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="切换"
+            android:gravity="center_horizontal"
+            android:textSize="11dp"
+            android:textColor="@color/white"
+            android:layout_toLeftOf="@id/tv_shutdown"
+            android:layout_marginRight="18dp"
+            android:layout_centerVertical="true"
+            android:drawableTop="@mipmap/change_icon"
+            android:layout_marginTop="5.5dp"
+            android:drawablePadding="5dp"
+            />
         <TextView
             android:id="@+id/tv_shutdown"
             android:layout_width="wrap_content"

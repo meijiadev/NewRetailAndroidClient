@@ -53,6 +53,7 @@ import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.base.BaseFragmentAdapter;
 import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 import ddr.example.com.newretailandroidclient.ui.fragment.MapFragment;
+import ddr.example.com.newretailandroidclient.ui.fragment.SellDataFrament;
 import ddr.example.com.newretailandroidclient.ui.fragment.SetUpFragment;
 import ddr.example.com.newretailandroidclient.ui.fragment.StatusFragment;
 import ddr.example.com.newretailandroidclient.ui.fragment.TaskFragment;
@@ -79,6 +80,8 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     LineTextView tv_taskManager;
     @BindView(R.id.highset)
     LineTextView tv_highSet;
+    @BindView(R.id.sell_data)
+    LineTextView sell_data;
     @BindView(R.id.tv_quit)
     TextView tv_quit;
     @BindView(R.id.iv_jt_def)
@@ -156,6 +159,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         mPagerAdapter.addFragment(MapFragment.newInstance());
         mPagerAdapter.addFragment(TaskFragment.newInstance());
         mPagerAdapter.addFragment(SetUpFragment.newInstance());
+        mPagerAdapter.addFragment(SellDataFrament.newInstance());
         vpHomePager.setAdapter(mPagerAdapter);
         //限制页面的数量
         vpHomePager.setOffscreenPageLimit(mPagerAdapter.getCount());
@@ -193,7 +197,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     }
 
 
-    @OnClick({R.id.status, R.id.mapmanager, R.id.taskmanager, R.id.highset,R.id.tv_quit,R.id.tv_shutdown})
+    @OnClick({R.id.status, R.id.mapmanager, R.id.taskmanager, R.id.highset,R.id.tv_quit,R.id.tv_shutdown,R.id.sell_data})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.status:
@@ -208,6 +212,9 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
                 break;
             case R.id.highset:
                 vpHomePager.setCurrentItem(3);
+                break;
+            case R.id.sell_data:
+                vpHomePager.setCurrentItem(4);
                 break;
             case R.id.tv_quit:
                 new InputDialog.Builder(getActivity())
@@ -253,40 +260,60 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
                 tv_mapManager.isChecked(false);
                 tv_highSet.isChecked(false);
                 tv_taskManager.isChecked(false);
+                sell_data.isChecked(false);
                 tv_status.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.status_check), null, null, null);
                 tv_mapManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.map_def), null, null, null);
                 tv_highSet.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.hightset_def), null, null, null);
                 tv_taskManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.version_def), null, null, null);
+                sell_data.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.retail_data_def), null, null, null);
                 break;
             case 1:
                 tv_status.isChecked(false);
                 tv_mapManager.isChecked(true);
                 tv_highSet.isChecked(false);
                 tv_taskManager.isChecked(false);
+                sell_data.isChecked(false);
                 tv_status.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.status_def), null, null, null);
                 tv_mapManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.map_check), null, null, null);
                 tv_highSet.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.hightset_def), null, null, null);
                 tv_taskManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.version_def), null, null, null);
+                sell_data.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.retail_data_def), null, null, null);
                 break;
             case 2:
                 tv_status.isChecked(false);
                 tv_mapManager.isChecked(false);
                 tv_highSet.isChecked(false);
                 tv_taskManager.isChecked(true);
+                sell_data.isChecked(false);
                 tv_status.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.status_def), null, null, null);
                 tv_mapManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.map_def), null, null, null);
                 tv_highSet.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.hightset_def), null, null, null);
                 tv_taskManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.version_check), null, null, null);
+                sell_data.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.retail_data_def), null, null, null);
                 break;
             case 3:
                 tv_status.isChecked(false);
                 tv_mapManager.isChecked(false);
                 tv_highSet.isChecked(true);
                 tv_taskManager.isChecked(false);
+                sell_data.isChecked(false);
                 tv_status.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.status_def), null, null, null);
                 tv_mapManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.map_def), null, null, null);
                 tv_highSet.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.hightset_check), null, null, null);
                 tv_taskManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.version_def), null, null, null);
+                sell_data.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.retail_data_def), null, null, null);
+                break;
+            case 4:
+                tv_status.isChecked(false);
+                tv_mapManager.isChecked(false);
+                tv_highSet.isChecked(false);
+                tv_taskManager.isChecked(false);
+                sell_data.isChecked(true);
+                tv_status.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.status_def), null, null, null);
+                tv_mapManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.map_def), null, null, null);
+                tv_highSet.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.hightset_def), null, null, null);
+                tv_taskManager.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.version_def), null, null, null);
+                sell_data.setCompoundDrawablesWithIntrinsicBounds(getResources().getDrawable(R.mipmap.retail_data_chack), null, null, null);
                 break;
         }
     }
