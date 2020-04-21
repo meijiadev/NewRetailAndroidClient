@@ -8,7 +8,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import DDRCommProto.BaseCmd;
@@ -114,6 +116,10 @@ public class EditManagerSet extends DDRLazyFragment {
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqGetSysVersion);
+        SimpleDateFormat formatter   =   new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
+        Date date=new Date(System.currentTimeMillis());//系统小时数
+        String ss=formatter.format(date);//获取当前时间
+        Logger.e("版本信息发送时间"+ ss);
     }
 
     /**

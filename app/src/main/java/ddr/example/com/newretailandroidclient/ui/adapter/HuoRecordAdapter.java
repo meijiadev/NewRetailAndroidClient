@@ -26,6 +26,7 @@ import java.util.List;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseAdapter;
 import ddr.example.com.newretailandroidclient.entity.other.HuoRecord;
+import ddr.example.com.newretailandroidclient.entity.other.HuoRecordS;
 import ddr.example.com.newretailandroidclient.other.Logger;
 
 public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
@@ -34,6 +35,8 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     private TextView tv_huo_name;
     private OnItemClickListener mOnItemClickListener;
     private Handler handler;
+    private HuoRecordS huoRecordS;
+    private List<HuoRecord> huoRecordList;
 
     public HuoRecordAdapter(int layoutResId) {
         super(layoutResId);
@@ -61,6 +64,9 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     @Override
     protected void convert(@NonNull BaseViewHolder helper, HuoRecord item) {
         super.convert(helper, item);
+        huoRecordS=HuoRecordS.getInstance();
+        huoRecordList=huoRecordS.getHuoRecordList();
+        transformHuoInfo(huoRecordList);
         tv_huo_num=helper.getView(R.id.tv_huo_num);
         iv_huo_image=helper.getView(R.id.iv_huo_image);
         tv_huo_name=helper.getView(R.id.tv_huo_name);
@@ -163,12 +169,14 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     public void transformHuoInfo(List<HuoRecord> huoRecords) {
         for (int i = 0; i < huoRecords.size(); i++) {
             String dirName = huoRecords.get(i).getHuoID();
-            String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" +"SellImage"+ dirName + "/" + ".png";
+            String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" +"SellImage"+"/"+ dirName + ".png";
             if (pngPath!=null){
+                Logger.e("查找到的图片"+pngPath);
                 FileInputStream fis = null;
                 try {
                     fis = new FileInputStream(pngPath);
                     lookBitmap = BitmapFactory.decodeStream(fis);
+                    Logger.e("图片地址"+lookBitmap);
                 } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 } catch (NullPointerException e) {
