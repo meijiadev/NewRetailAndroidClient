@@ -4,16 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import DDRVLNMapProto.DDRVLNMap;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.point.BaseMode;
 import ddr.example.com.newretailandroidclient.entity.point.PathLine;
 import ddr.example.com.newretailandroidclient.entity.point.SpaceItem;
 import ddr.example.com.newretailandroidclient.entity.point.TargetPoint;
 import ddr.example.com.newretailandroidclient.entity.point.TaskMode;
-import ddr.example.com.newretailandroidclient.other.Logger;
 
 /**
  * 用于保存解析后的地图详情信息的列表
- *
  */
 public class MapFileStatus {
     public static MapFileStatus mapFileStatus;
@@ -38,6 +37,8 @@ public class MapFileStatus {
     private List<TargetPoint> cTargetPoints=new ArrayList<>();         // 解析后的目标点数据
     private List<PathLine> cPathLines=new ArrayList<>();               //解析后的路径数据
     private List<TaskMode> cTaskModes=new ArrayList<>();               //解析后的任务数据
+
+    private List<byte[]> bitmapBytes=new ArrayList<>();               //图片的字节数组
 
     private DDRVLNMap.affine_mat affine_mat;                          //地图的矩阵
 
@@ -90,7 +91,7 @@ public class MapFileStatus {
         space_items=reqDDRVLNMapEx.getSpacedata().getSpaceSetList();
         if (mapName.equals(NotifyBaseStatusEx.getInstance().getCurroute())){
            currentMapEx=reqDDRVLNMapEx;
-            Logger.e("返回信息为当前地图"+mapName);
+           // Logger.e("返回信息为当前地图"+mapName+";"+taskItemExes.size());
             cTargetPoints.clear();
             cPathLines.clear();
             cTaskModes.clear();
@@ -169,7 +170,6 @@ public class MapFileStatus {
             }
 
         }
-        //Logger.e("返回地图为查看信息");
         targetPoints.clear();
         pathLines.clear();
         taskModes.clear();
@@ -232,6 +232,7 @@ public class MapFileStatus {
             taskModes.add(taskMode);
         }
 
+
         for (int i=0;i<space_items.size();i++){
             SpaceItem spaceItem=new SpaceItem();
             spaceItem.setName(space_items.get(i).getName().toStringUtf8());
@@ -261,11 +262,33 @@ public class MapFileStatus {
     }
 
     public void setMapInfos(List<MapInfo> mapInfos) {
+        for (int i = 0; i < mapInfos.size(); i++) {
+            String dirName = mapInfos.get(i).getMapName();
+            String pngPath = GlobalParameter.ROBOT_FOLDER + dirName + "/" + "bkPic.png";
+            if (pngPath != null) {
+                mapInfos.get(i).setBitmap(pngPath);
+            } else {
+                mapInfos.remove(i);
+            }
+            if (dirName.equals(NotifyBaseStatusEx.getInstance().getCurroute())) {
+                mapInfos.get(i).setUsing(true);
+            } else {
+                mapInfos.get(i).setUsing(false);
+            }
+        }
         this.mapInfos = mapInfos;
     }
 
     public List<MapInfo> getMapInfos() {
         return mapInfos;
+    }
+
+    public void setBitmapBytes(List<byte[]> bitmapBytes) {
+        this.bitmapBytes = bitmapBytes;
+    }
+
+    public List<byte[]> getBitmapBytes() {
+        return bitmapBytes;
     }
 
     /**
