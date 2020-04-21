@@ -35,6 +35,7 @@ import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyLidarPtsEntity;
 import ddr.example.com.newretailandroidclient.entity.point.XyEntity;
 import ddr.example.com.newretailandroidclient.other.Logger;
+import ddr.example.com.newretailandroidclient.protocobuf.CmdSchedule;
 import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
@@ -266,7 +267,7 @@ public class CollectingActivity extends DDRActivity {
         switch (view.getId()){
             case R.id.add_poi:
                 BaseCmd.reqAddPathPointWhileCollecting reqAddPathPointWhileCollecting=BaseCmd.reqAddPathPointWhileCollecting.newBuilder().build();
-                tcpClient.sendData(null,reqAddPathPointWhileCollecting);
+                tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqAddPathPointWhileCollecting);
                 EventBus.getDefault().post(new MessageEvent(MessageEvent.Type.addPoiPoint));
                 poiPoints.add(new XyEntity(posX,posY));
                 toast("标记成功");
@@ -274,7 +275,7 @@ public class CollectingActivity extends DDRActivity {
             case R.id.tv_detection:
                 BaseCmd.reqDetectLoop reqDetectLoop=BaseCmd.reqDetectLoop.newBuilder()
                         .build();
-                tcpClient.sendData(null,reqDetectLoop);
+                tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqDetectLoop);
                 break;
         }
 
@@ -462,7 +463,7 @@ public class CollectingActivity extends DDRActivity {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqCmdMove);
@@ -479,7 +480,7 @@ public class CollectingActivity extends DDRActivity {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqCmdEndActionMode);
@@ -496,7 +497,7 @@ public class CollectingActivity extends DDRActivity {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqCmdEndActionMode);

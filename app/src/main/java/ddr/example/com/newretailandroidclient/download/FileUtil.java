@@ -48,7 +48,7 @@ public class FileUtil {
      */
     public File createSdFile(String fileName) throws IOException {
         String finalFileName=sdPath+fileName;
-        //Logger.e("最终的文件名和路径："+finalFileName);
+        Logger.e("最终的文件名和路径："+finalFileName);
         File file=new File(finalFileName);
         file.createNewFile();
         return file;

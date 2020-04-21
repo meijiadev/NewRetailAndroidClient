@@ -268,7 +268,7 @@ public class TaskFragment extends DDRLazyFragment<HomeActivity> implements PickV
                 .build();
         BaseCmd.CommonHeader commonHeader=BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader,reqCmdPauseResume);
@@ -284,7 +284,7 @@ public class TaskFragment extends DDRLazyFragment<HomeActivity> implements PickV
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqCmdEndActionMode);
@@ -312,6 +312,7 @@ public class TaskFragment extends DDRLazyFragment<HomeActivity> implements PickV
                     if (taskModeList.get(i+1).getStartHour()>taskModeList.get(i).getEndHour()){
                         isCheckTime=true;
                     }else {
+                        Logger.e("前"+taskModeList.get(i).getEndHour()+"后"+taskModeList.get(i+1).getStartHour());
                         isCheckTime=false;
                         toast("定时列表第"+(i+2)+"行时间设置有误");
                     }

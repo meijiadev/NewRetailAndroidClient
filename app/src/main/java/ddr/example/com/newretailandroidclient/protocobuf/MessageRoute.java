@@ -57,6 +57,9 @@ public class MessageRoute {
         }else if (className.contains("DDRModuleCmd")){
             String sType=className.replaceAll("class DDRModuleProto.DDRModuleCmd\\$","DDRModuleProto.");
             return sType;
+        }else if (className.contains("DDRAIServiceCmd")){
+            String sType=className.replaceAll("class DDRAIServiceProto.DDRAIServiceCmd\\$","DDRAIServiceProto.");
+            return sType;
         }
         return null;
     }
@@ -75,6 +78,9 @@ public class MessageRoute {
             return className;
         }else if (typeName.contains("DDRModuleProto")){
             String className=typeName.replaceAll("DDRModuleProto\\.","class DDRModuleProto.DDRModuleCmd\\$");
+            return className;
+        }else if (typeName.contains("DDRAIServiceProto")){
+            String className=typeName.replaceAll("DDRAIServiceProto\\.","class DDRAIServiceProto.DDRAIServiceCmd\\$");
             return className;
         }
         return null;
@@ -210,6 +216,7 @@ public class MessageRoute {
         if (streamBuffer.arrayDeque.size()>=4){
             head=streamBuffer.peekData(4);
             String shead=new String(head,"UTF-8");
+            Logger.e("----head:"+shead);
             if (shead.equals(headString)){
                 streamBuffer.pollData(4);
                 parseLengthState();
@@ -399,7 +406,7 @@ public class MessageRoute {
         //Logger.e("------"+type);
         type = protoTypeName2JavaClassName(type);
         type = type.replace("class ", "");
-        //Logger.e("------"+type);
+//        Logger.e("------"+type);
         try {
             Class<?> clazz=Class.forName(type);
             if (bytes!=null){

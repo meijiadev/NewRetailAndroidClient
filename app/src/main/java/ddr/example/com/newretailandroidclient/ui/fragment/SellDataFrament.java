@@ -6,11 +6,18 @@ import android.widget.TextView;
 
 import androidx.viewpager.widget.ViewPager;
 
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import DDRAIServiceProto.DDRAIServiceCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseFragmentAdapter;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
+import ddr.example.com.newretailandroidclient.entity.MessageEvent;
+import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
+import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.ui.activity.HomeActivity;
 import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellBackRecord;
 import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellChongRecord;
@@ -18,6 +25,7 @@ import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellErr
 import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellHuoRecord;
 import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellMapSportRecord;
 import ddr.example.com.newretailandroidclient.ui.fragment.secondFragment.SellRetaileRecord;
+import ddr.example.com.newretailandroidclient.widget.textview.BasrTextView;
 import ddr.example.com.newretailandroidclient.widget.textview.LineTextView;
 import ddr.example.com.newretailandroidclient.widget.view.DDRViewPager;
 /**
@@ -32,21 +40,24 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
     @BindView(R.id.relative_count)
     RelativeLayout relative_count;
     @BindView(R.id.tv_retail_record)
-    LineTextView tv_retail_record;
+    BasrTextView tv_retail_record;
     @BindView(R.id.tv_back_record)
-    LineTextView tv_back_record;
+    BasrTextView tv_back_record;
     @BindView(R.id.tv_huo_stork)
-    LineTextView tv_huo_stork;
+    BasrTextView tv_huo_stork;
     @BindView(R.id.relative_sport)
     RelativeLayout relative_sport;
     @BindView(R.id.tv_sport_record)
-    LineTextView tv_sport_record;
+    BasrTextView tv_sport_record;
     @BindView(R.id.tv_error_record)
-    LineTextView tv_error_record;
+    BasrTextView tv_error_record;
     @BindView(R.id.tv_chong_record)
-    LineTextView tv_chong_record;
+    BasrTextView tv_chong_record;
+    @BindView(R.id.tv_sport_count)
+    TextView tv_sport_count;
 
     private BaseFragmentAdapter<DDRLazyFragment> mPagerAdapter;
+    private TcpAiClient tcpAiClient;
 
     public static SellDataFrament newInstance(){
         return new SellDataFrament();
@@ -55,6 +66,7 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
     protected int getLayoutId() {
         return R.layout.fragment_sell_data;
     }
+
 
     @Override
     protected void initView() {
@@ -73,6 +85,8 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
 
     @Override
     protected void initData() {
+        tcpAiClient=TcpAiClient.getInstance(getContext(), ClientMessageDispatcher.getInstance());
+        isChecked();
 
     }
     boolean isopen_relative=true;
@@ -83,18 +97,22 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
             case R.id.tv_retail_count://售卖统计
                 if (isopen_relative){
                     relative_count.setVisibility(View.GONE);
+                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_right),null);
                     isopen_relative=false;
                 }else {
                     relative_count.setVisibility(View.VISIBLE);
+                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_xia),null);
                     isopen_relative=true;
                 }
                 break;
             case R.id.tv_sport_count:
                 if (isopen_sport){
                     relative_sport.setVisibility(View.GONE);
+                    tv_sport_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_right),null);
                     isopen_sport=false;
                 }else {
                     relative_sport.setVisibility(View.VISIBLE);
+                    tv_sport_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_xia),null);
                     isopen_sport=true;
                 }
                 break;
@@ -117,7 +135,73 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
                 viewPager.setCurrentItem(5);
                 break;
         }
+        isChecked();
     }
+
+    /**
+     * 判断哪个页面是否被选中
+     */
+    protected void isChecked() {
+        tv_retail_record.setType(0);
+        tv_back_record.setType(0);
+        tv_huo_stork.setType(0);
+        tv_sport_record.setType(0);
+        tv_error_record.setType(0);
+        tv_chong_record.setType(0);
+        switch (viewPager.getCurrentItem()){
+            case 0:
+                tv_retail_record.isChecked(true);
+                tv_back_record.isChecked(false);
+                tv_huo_stork.isChecked(false);
+                tv_sport_record.isChecked(false);
+                tv_error_record.isChecked(false);
+                tv_chong_record.isChecked(false);
+                break;
+            case 1:
+                tv_retail_record.isChecked(false);
+                tv_back_record.isChecked(true);
+                tv_huo_stork.isChecked(false);
+                tv_sport_record.isChecked(false);
+                tv_error_record.isChecked(false);
+                tv_chong_record.isChecked(false);
+                break;
+            case 2:
+                tv_retail_record.isChecked(false);
+                tv_back_record.isChecked(false);
+                tv_huo_stork.isChecked(true);
+                tv_sport_record.isChecked(false);
+                tv_error_record.isChecked(false);
+                tv_chong_record.isChecked(false);
+                break;
+            case 3:
+                tv_retail_record.isChecked(false);
+                tv_back_record.isChecked(false);
+                tv_huo_stork.isChecked(false);
+                tv_sport_record.isChecked(true);
+                tv_error_record.isChecked(false);
+                tv_chong_record.isChecked(false);
+                break;
+            case 4:
+                tv_retail_record.isChecked(false);
+                tv_back_record.isChecked(false);
+                tv_huo_stork.isChecked(false);
+                tv_sport_record.isChecked(false);
+                tv_error_record.isChecked(true);
+                tv_chong_record.isChecked(false);
+                break;
+            case 5:
+                tv_retail_record.isChecked(false);
+                tv_back_record.isChecked(false);
+                tv_huo_stork.isChecked(false);
+                tv_sport_record.isChecked(false);
+                tv_error_record.isChecked(false);
+                tv_chong_record.isChecked(true);
+                break;
+
+        }
+    }
+
+
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
@@ -126,7 +210,7 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
 
     @Override
     public void onPageSelected(int position) {
-
+        isChecked();
     }
 
     @Override

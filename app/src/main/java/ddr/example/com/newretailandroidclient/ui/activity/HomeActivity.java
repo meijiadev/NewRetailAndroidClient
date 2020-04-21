@@ -27,6 +27,7 @@ import DDRCommProto.BaseCmd;
 
 import androidx.viewpager.widget.ViewPager;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -39,18 +40,23 @@ import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRActivity;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyEnvInfo;
+import ddr.example.com.newretailandroidclient.entity.other.UdpIp;
 import ddr.example.com.newretailandroidclient.glide.ImageLoader;
 import ddr.example.com.newretailandroidclient.helper.ActivityStackManager;
 import ddr.example.com.newretailandroidclient.helper.DoubleClickHelper;
 import ddr.example.com.newretailandroidclient.other.DpOrPxUtils;
 import ddr.example.com.newretailandroidclient.other.KeyboardWatcher;
 import ddr.example.com.newretailandroidclient.other.Logger;
+import ddr.example.com.newretailandroidclient.protocobuf.CmdSchedule;
 import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
+import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.base.BaseFragmentAdapter;
+import ddr.example.com.newretailandroidclient.socket.UdpClient;
 import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 import ddr.example.com.newretailandroidclient.ui.fragment.MapFragment;
 import ddr.example.com.newretailandroidclient.ui.fragment.SellDataFrament;
@@ -112,6 +118,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     private String xsu;
     private String jsu;
     private boolean ishaveChecked = false;
+    private GlobalParameter globalParameter;
 
 
     /**
@@ -142,6 +149,23 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
             case touchFloatWindow:
                 showControlPopupWindow();
                 break;
+            case updateAiPort:
+                udpIp1= (UdpIp) messageEvent.getData();
+//                Logger.e(globalParameter.isLan()+"是否局域网");
+//                Logger.e("ip"+udpIp1.getIp()+"端口"+udpIp1.getPort());
+                if (globalParameter.isLan()) {
+                    tcpAiClient.createConnect(udpIp1.getIp(),udpIp1.getPort());
+                }else {
+//                    Logger.e("广域网不需要登陆AI");
+                }
+                break;
+            case tcpAiConnected:
+                tcpAiClient.sendData(null, CmdSchedule.localLogin("admin_android","admin_android",4));
+                break;
+            case LoginAiSuccess:
+                toast("AI服务连接成功");
+                UdpClient.getInstance(context,ClientMessageDispatcher.getInstance()).close();
+                break;
         }
 
     }
@@ -170,12 +194,17 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
 
     @Override
     protected void initData() {
+        receiveAiBroadcast();
         tcpClient = TcpClient.getInstance(context, ClientMessageDispatcher.getInstance());
+        tcpAiClient=TcpAiClient.getInstance(context,ClientMessageDispatcher.getInstance());
+        globalParameter=GlobalParameter.getInstance();
         notifyBaseStatusEx = NotifyBaseStatusEx.getInstance();
         ImageLoader.clear(this); //清除图片缓存
         tcpClient.requestFile();     //请求所有地图
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();
+        Logger.e("AIip"+udpIp1.getIp()+"AI端口"+udpIp1.getPort());
+
 
 
     }
@@ -429,6 +458,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         vpHomePager.removeOnPageChangeListener(this);
         vpHomePager.setAdapter(null);
         tcpClient.disConnect();
+        tcpAiClient.disConnect();
         editor.putFloat("speed", (float) maxSpeed);
         editor.commit();
         super.onDestroy();
@@ -679,6 +709,21 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     @Override
     public void onSoftKeyboardClosed() {
 
+    }
+    public UdpClient udpClient;
+    private int aiPort=18888;
+    public TcpAiClient tcpAiClient;
+    private UdpIp udpIp1=new UdpIp();
+    /**
+     * 接收AIServer广播
+     */
+    private void receiveAiBroadcast(){
+            udpClient= UdpClient.getInstance(this,ClientMessageDispatcher.getInstance());
+            try {
+                udpClient.connect(aiPort);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
     }
 }
 

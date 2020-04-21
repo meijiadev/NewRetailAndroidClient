@@ -8,6 +8,11 @@
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <!--悬浮窗-->
     <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- 网络权限-->
+    <uses-permission android:name="android.permission.CHANGE_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+
     <application
         android:name="ddr.example.com.newretailandroidclient.base.BaseApplication"
         android:allowBackup="true"
@@ -49,6 +54,8 @@
         <activity android:name="ddr.example.com.newretailandroidclient.ui.activity.RelocationActivity"
             android:screenOrientation="landscape"/>
         <activity android:name="ddr.example.com.newretailandroidclient.ui.activity.MapSettingActivity"
+            android:screenOrientation="landscape"/>
+        <activity android:name="ddr.example.com.newretailandroidclient.ui.activity.DeviceSelectActivity"
             android:screenOrientation="landscape"/>
     </application>
 

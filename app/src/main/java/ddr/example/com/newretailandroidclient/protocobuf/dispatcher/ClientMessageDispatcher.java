@@ -1,5 +1,6 @@
 package ddr.example.com.newretailandroidclient.protocobuf.dispatcher;
 
+import DDRAIServiceProto.DDRAIServiceCmd;
 import DDRCommProto.BaseCmd;
 import DDRCommProto.RemoteCmd;
 import DDRModuleProto.DDRModuleCmd;
@@ -12,6 +13,7 @@ import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyHardSta
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyLidarPtsProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyMapGenStatProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyRelocaStatusProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspAllSellsRecordProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspClientGetMapInfoProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspCmdMoveProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspCmdRelocProcessor;
@@ -21,11 +23,15 @@ import ddr.example.com.newretailandroidclient.protocobuf.processor.RspDDRVLNMapE
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspCmdStartActionModelProcessor;
 
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspDetecLoopProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetChargingRecordsProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetDDRVLNMapExProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetErrorRecordsProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetMapRecordsProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetParameterProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetSensorProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetSysVersionProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGetTaskOperational;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspGoodsDetailProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspHeartBeatProcess;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspLoginProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspMapOperationalProcessor;
@@ -35,6 +41,7 @@ import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRemoteServ
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRunControlExProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRunSpecificPoint;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspSelectLSProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspStockInfoHuoProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.ServerInformationProcessor;
 
 
@@ -135,5 +142,23 @@ public class ClientMessageDispatcher extends BaseMessageDispatcher {
 
         BaseCmd.notifyRelocStatus relocStatus=BaseCmd.notifyRelocStatus.newBuilder().build();
         m_ProcessorMap.put(relocStatus.getClass().toString(),new NotifyRelocaStatusProcessor());
+
+        DDRAIServiceCmd.rspAllSellsRecord rspAllSellsRecord=DDRAIServiceCmd.rspAllSellsRecord.newBuilder().build();
+        m_ProcessorMap.put(rspAllSellsRecord.getClass().toString(),new RspAllSellsRecordProcessor());
+
+        DDRAIServiceCmd.rspStockInfo rspStockInfo=DDRAIServiceCmd.rspStockInfo.newBuilder().build();
+        m_ProcessorMap.put(rspStockInfo.getClass().toString(),new RspStockInfoHuoProcessor());
+
+        DDRAIServiceCmd.rspGoodsDetail rspGoodsDetail=DDRAIServiceCmd.rspGoodsDetail.newBuilder().build();
+        m_ProcessorMap.put(rspGoodsDetail.getClass().toString(),new RspGoodsDetailProcessor());
+
+        DDRAIServiceCmd.rspGetErrorRecords rspGetErrorRecords=DDRAIServiceCmd.rspGetErrorRecords.newBuilder().build();
+        m_ProcessorMap.put(rspGetErrorRecords.getClass().toString(),new RspGetErrorRecordsProcessor());
+
+        DDRAIServiceCmd.rspGetChargingRecords rspGetChargingRecords=DDRAIServiceCmd.rspGetChargingRecords.newBuilder().build();
+        m_ProcessorMap.put(rspGetChargingRecords.getClass().toString(),new RspGetChargingRecordsProcessor());
+
+        DDRAIServiceCmd.rspGetMapRecords rspGetMapRecords=DDRAIServiceCmd.rspGetMapRecords.newBuilder().build();
+        m_ProcessorMap.put(rspGetMapRecords.getClass().toString(),new RspGetMapRecordsProcessor());
     }
 }

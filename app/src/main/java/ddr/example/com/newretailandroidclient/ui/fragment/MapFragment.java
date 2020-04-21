@@ -339,7 +339,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
                                                         .setMode(BaseCmd.eCmdActionMode.eRec)
                                                         .setRouteName(ByteString.copyFromUtf8(name))
                                                         .build();
-                                                tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eLSMSlamNavigation), reqCmdStartActionMode);
+                                                tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer), reqCmdStartActionMode);
                                                 Intent intent = new Intent(getAttachActivity(), CollectingActivity.class);
                                                 intent.putExtra("CollectName", name);
                                                 startActivity(intent);
@@ -1071,6 +1071,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
      * 进入地图详情页面
      */
     private void intoMapDetail(int position) {
+        Logger.e("获取到的图片"+mapInfos.get(position).getBitmap());
         bitmapPath = mapInfos.get(position).getBitmap();
         mapName = mapInfos.get(position).getMapName();
         tcpClient.getMapInfo(ByteString.copyFromUtf8(mapName));
@@ -1199,7 +1200,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
         BaseCmd.reqCmdReloc reqCmdReloc=BaseCmd.reqCmdReloc.newBuilder()
                 .setTypeValue(0)
                 .build();
-        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eForwarderClient),reqCmdReloc);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqCmdReloc);
     }
 
     /**
@@ -1521,6 +1522,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
             String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" + dirName + "/" + "bkPic.png";
             if (pngPath != null) {
                 infoList.get(i).setBitmap(pngPath);
+                Logger.e("设置的图片地址"+infoList.get(i).getBitmap()+pngPath+"------"+dirName);
             } else {
                 infoList.remove(i);
             }

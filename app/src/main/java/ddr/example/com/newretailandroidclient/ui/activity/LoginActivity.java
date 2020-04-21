@@ -2,7 +2,9 @@ package ddr.example.com.newretailandroidclient.ui.activity;
 
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.view.View;
 import android.widget.Button;
@@ -15,16 +17,21 @@ import org.greenrobot.eventbus.ThreadMode;
 
 import java.io.IOException;
 
+import DDRAIServiceProto.DDRAIServiceCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRActivity;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
+import ddr.example.com.newretailandroidclient.entity.other.UdpIp;
 import ddr.example.com.newretailandroidclient.other.Logger;
 import ddr.example.com.newretailandroidclient.protocobuf.CmdSchedule;
 import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
+import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
+import ddr.example.com.newretailandroidclient.socket.UdpAiClient;
 import ddr.example.com.newretailandroidclient.socket.UdpClient;
 import ddr.example.com.newretailandroidclient.ui.dialog.WaitDialog;
 
@@ -52,19 +59,25 @@ public  class LoginActivity extends DDRActivity {
 
     public  int tcpPort = 0;
     private String accountName = "", passwordName = "";
+    private String retailName="retail_1",retailPassword="retail_1";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
     public TcpClient tcpClient;
+    public TcpAiClient tcpAiClient;
 
     public UdpClient udpClient;
+    public UdpAiClient udpClient1;
     private BaseDialog waitDialog;
     private static final String LAN_IP="192.168.0.95";    //局域网IP
     private int port=28888;
+    private int aiPort=18888;
     private boolean hasReceiveBroadcast=false;            //是否接收到广播
     private boolean isLan=true;                                //是否是局域网  默认局域网登录
+    private UdpIp udpIp=new UdpIp();
+    private UdpIp udpIp1=new UdpIp();
 
-
+    private GlobalParameter globalParameter;
     @Subscribe(threadMode = ThreadMode.MAIN)
     public void upDate(MessageEvent messageEvent){
         switch (messageEvent.getType()){
@@ -72,8 +85,13 @@ public  class LoginActivity extends DDRActivity {
                 hasReceiveBroadcast=true;
                 break;
             case updatePort:
-                tcpPort= (int) messageEvent.getData();
+                udpIp= (UdpIp) messageEvent.getData();
+                Logger.e("ip"+udpIp.getIp()+"端口"+udpIp.getPort());
                 break;
+//            case updateAiPort:
+//                udpIp1= (UdpIp) messageEvent.getData();
+//                Logger.e("ip"+udpIp1.getIp()+"端口"+udpIp1.getPort());
+//                break;
             case LoginSuccess:
                 UdpClient.getInstance(context,ClientMessageDispatcher.getInstance()).close();
                 editor.putString("password", passwordName);
@@ -84,6 +102,9 @@ public  class LoginActivity extends DDRActivity {
                         waitDialog.dismiss();
                     }
                     startActivity(HomeActivity.class);
+//                    receiveAiBroadcast();
+//                    Logger.e("AIip"+udpIp1.getIp()+"AI端口"+udpIp1.getPort());
+//                    tcpAiClient.createConnect(udpIp1.getIp(),udpIp1.getPort());
                 },1000);
                 break;
             case wanLoginSuccess:
@@ -101,12 +122,15 @@ public  class LoginActivity extends DDRActivity {
             case tcpConnected:
                 if (isLan){
                     Logger.e("-----连接成功，开始登录");
-                    tcpClient.sendData(null, CmdSchedule.localLogin(accountName,passwordName));
+                    tcpClient.sendData(null, CmdSchedule.localLogin(accountName,passwordName,2));
+                    globalParameter.setLan(true);
                 }else {
                     Logger.e("-----广域网连接成功，开始登录");
-                    tcpClient.sendData(null,CmdSchedule.remoteLogin(accountName,passwordName));
+                    tcpClient.sendData(null,CmdSchedule.remoteLogin(retailName,retailPassword));
+                    globalParameter.setLan(false);
                 }
                 break;
+
         }
     }
 
@@ -129,6 +153,8 @@ public  class LoginActivity extends DDRActivity {
         editor = sharedPreferences.edit();
         password.setText(sharedPreferences.getString("password", ""));
         tcpClient=TcpClient.getInstance(context,ClientMessageDispatcher.getInstance());
+        globalParameter=GlobalParameter.getInstance();
+//        tcpAiClient=TcpAiClient.getInstance(context,ClientMessageDispatcher.getInstance());
 
     }
 
@@ -144,7 +170,8 @@ public  class LoginActivity extends DDRActivity {
                 }else {
                     if (isLan){                                   //局域网登录
                         if (hasReceiveBroadcast){
-                            tcpClient.createConnect(LAN_IP,tcpPort);
+                            Logger.e("ip"+udpIp.getIp()+"端口"+udpIp.getPort());
+                            tcpClient.createConnect(udpIp.getIp(),udpIp.getPort());
                             waitDialog=new WaitDialog.Builder(this)
                                     .setMessage("登录中...")
                                     .show();
@@ -201,24 +228,39 @@ public  class LoginActivity extends DDRActivity {
         }
     }
 
+    /**
+     * 接收AIServer广播
+     */
+    private void receiveAiBroadcast(){
+        udpClient1=UdpAiClient.getInstance(this,ClientMessageDispatcher.getInstance());
+        try {
+            udpClient1.connect(aiPort);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
 
 
     @Override
     protected void onRestart() {
         super.onRestart();
         receiveBroadcast();
+//        receiveAiBroadcast();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         tcpClient=null;
+//        tcpAiClient=null;
     }
 
     @Override
     public void onBackPressed() {
         super.onBackPressed();
         tcpClient.disConnect();
+//        tcpAiClient.disConnect();
     }
 
     /**
@@ -229,5 +271,6 @@ public  class LoginActivity extends DDRActivity {
     public boolean statusBarDarkFont() {
         return false;
     }
+
 
 }

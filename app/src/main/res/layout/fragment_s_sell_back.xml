@@ -98,7 +98,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@mipmap/xlright_5"
+            android:src="@mipmap/iv_page_left"
             android:layout_toLeftOf="@+id/recycle_pages_y_back"
             android:layout_marginRight="8dp"
             android:background="@drawable/bg_task_cz"
@@ -107,7 +107,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@mipmap/xlright_5"
+            android:src="@mipmap/iv_page_right"
             android:layout_toRightOf="@+id/recycle_pages_y_back"
             android:layout_marginLeft="24dp"
             android:background="@drawable/bg_task_cz"

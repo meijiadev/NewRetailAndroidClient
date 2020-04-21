@@ -127,7 +127,7 @@ public class RobotTestSet extends DDRLazyFragment {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqHardwareCheck);

@@ -6,9 +6,13 @@ import com.google.protobuf.GeneratedMessageLite;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import DDRCommProto.BaseCmd;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
+import ddr.example.com.newretailandroidclient.other.Logger;
 
 
 public class NotifyBaseStatusExProcessor extends BaseProcessor {
@@ -38,6 +42,11 @@ public class NotifyBaseStatusExProcessor extends BaseProcessor {
         notifyBaseStatusEx1.setChargingType(notifyBaseStatusEx.getChargingTypeValue());
         notifyBaseStatusEx1.seteTaskMode(notifyBaseStatusEx.getTaskmodeValue());
         notifyBaseStatusEx1.setTemopTaskNum(notifyBaseStatusEx.getTemporaryTaskCount());
+        SimpleDateFormat formatter   =   new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
+        Date date=new Date(System.currentTimeMillis());//系统小时数
+        String ss=formatter.format(date);//获取当前时间
+        Logger.e("接受notifybase数据时间"+ ss);
         EventBus.getDefault().postSticky(new MessageEvent(MessageEvent.Type.updateBaseStatus));
+
     }
 }

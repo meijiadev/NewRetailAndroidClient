@@ -52,15 +52,15 @@ public class StreamBuffer {
      * 取出数据并删除队列中的元素
      */
     public synchronized byte[] pollData(int len)throws NullPointerException{
-        byte [] data=new byte[len];
-            for (int i=0;i<len;i++){
-                try {
-                    data[i]=arrayDeque.poll().byteValue();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
+        byte[] data = new byte[len];
+        for (int i = 0; i < len; i++) {
+            try {
+                data[i] = arrayDeque.poll().byteValue();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-          return data;
+        }
+        return data;
       }
 
     /**

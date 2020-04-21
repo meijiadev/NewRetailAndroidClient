@@ -128,22 +128,26 @@ public class MapImageView0 extends ImageView {
                 fis = new FileInputStream(pngPath);
                 Bitmap bitmap = BitmapFactory.decodeStream(fis);
                 sourceBitmap=bitmap;
+                Logger.e("图片的宽高："+sourceBitmap.getWidth()+"；"+sourceBitmap.getHeight());
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }catch (NullPointerException e){
                 e.printStackTrace();
             }
-            Logger.e("图片的宽高："+sourceBitmap.getWidth()+"；"+sourceBitmap.getHeight());
             totalTranslateX=0;
             MapFileStatus mapFileStatus=MapFileStatus.getInstance();
-            data=mapFileStatus.getCurrentMapEx();
-            DDRVLNMap.affine_mat affine_mat=data.getBasedata().getAffinedata();
-            r00=affine_mat.getR11();
-            r01=affine_mat.getR12();
-            t0=affine_mat.getTx();
-            r10=affine_mat.getR21();
-            r11=affine_mat.getR22();
-            t1=affine_mat.getTy();
+            if (data!=null){
+                data=mapFileStatus.getCurrentMapEx();
+                DDRVLNMap.affine_mat affine_mat=data.getBasedata().getAffinedata();
+                r00=affine_mat.getR11();
+                r01=affine_mat.getR12();
+                t0=affine_mat.getTx();
+                r10=affine_mat.getR21();
+                r11=affine_mat.getR22();
+                t1=affine_mat.getTy();
+            }else {
+                Logger.e("图片获取失败--------");
+            }
             totalTranslateY=0;
             totalRatio=1;
             scaledRatio=1;

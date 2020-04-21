@@ -85,14 +85,14 @@
             android:layout_centerInParent="true"
             android:visibility="gone"
             />
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_map"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/bt_create_map"
             android:layout_marginLeft="16dp"
-            android:layout_marginTop="14dp"
-            ></androidx.recyclerview.widget.RecyclerView>
+            android:layout_marginTop="11dp"></androidx.recyclerview.widget.RecyclerView>
     </RelativeLayout>
    <!--点击地图查看地图详情布局-->
     <RelativeLayout

@@ -107,7 +107,7 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@mipmap/xlright_5"
+            android:src="@mipmap/iv_page_left"
             android:layout_toLeftOf="@+id/recycle_pages_y_map"
             android:layout_marginRight="8dp"
             android:background="@drawable/bg_task_cz"
@@ -116,10 +116,228 @@
         <ImageView
             android:layout_width="30dp"
             android:layout_height="30dp"
-            android:src="@mipmap/xlright_5"
+            android:src="@mipmap/iv_page_right"
             android:layout_toRightOf="@+id/recycle_pages_y_map"
             android:layout_marginLeft="24dp"
             android:background="@drawable/bg_task_cz"
             android:id="@+id/iv_add_y"/>
+    </RelativeLayout>
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="28dp"
+        android:textColor="#ffffff"
+        android:textSize="14sp"
+        android:text="导出列表"
+        android:gravity="center"
+        android:layout_below="@id/recycle_sell_map"
+        android:layout_marginTop="26.5dp"
+        android:layout_marginLeft="705dp"
+        android:background="@drawable/bg_task_cz"
+        android:id="@+id/tv_d_m_excel"
+        />
+
+    <RelativeLayout
+        android:layout_width="777dp"
+        android:layout_height="match_parent"
+        android:background="#101112"
+        android:orientation="vertical"
+        android:id="@+id/relative_sell_map"
+        android:visibility="gone">
+
+        <RelativeLayout
+            android:layout_width="758dp"
+            android:layout_height="44dp"
+            android:background="#161718">
+
+            <ImageView
+                android:id="@+id/iv_sell_m_quit"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="6dp"
+                android:src="@mipmap/iv_backs" />
+
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
+                android:id="@+id/tv_sell_map_all"
+                android:layout_width="112dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="76dp"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="全部"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
+                android:id="@+id/tv_sell_map_success"
+                android:layout_width="112dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="6dp"
+                android:layout_toRightOf="@id/tv_sell_map_all"
+                android:gravity="center"
+                android:text="售卖成功"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
+                android:id="@+id/tv_sell_map_time"
+                android:layout_width="112dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="6dp"
+                android:layout_toRightOf="@id/tv_sell_map_success"
+                android:gravity="center"
+                android:text="售卖超时终止"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
+                android:id="@+id/tv_sell_map_fail"
+                android:layout_width="112dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="6dp"
+                android:layout_toRightOf="@id/tv_sell_map_time"
+                android:gravity="center"
+                android:text="出货失败"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
+                android:id="@+id/tv_sell_map_fault"
+                android:layout_width="112dp"
+                android:layout_height="32dp"
+                android:layout_marginLeft="18dp"
+                android:layout_marginTop="6dp"
+                android:layout_toRightOf="@id/tv_sell_map_fail"
+                android:gravity="center"
+                android:text="售卖故障"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="124dp"
+            android:layout_height="479.5dp"
+            android:layout_marginTop="48.5dp"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="17dp"
+            android:background="#161718">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="12dp"
+                android:gravity="center"
+                android:text="开始售卖时间："
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_sell_m_s_time"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="48dp"
+                android:layout_marginEnd="12dp"
+                android:gravity="center|left"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="108dp"
+                android:gravity="center|left"
+                android:text="结束售卖时间："
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_sell_m_e_time"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:layout_below="@id/tv_sell_m_s_time"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="48dp"
+                android:gravity="center|left"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="204dp"
+                android:gravity="center|left"
+                android:text="售卖动作时长："
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_sell_m_r_time"
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_below="@id/tv_sell_m_e_time"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="48dp"
+                android:gravity="center|left"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="276dp"
+                android:gravity="center|left"
+                android:text="售卖结果："
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_sell_m_result"
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_below="@id/tv_sell_m_r_time"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="48dp"
+                android:gravity="center|left"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="348dp"
+                android:gravity="center|left"
+                android:text="售卖编号："
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+            <TextView
+                android:id="@+id/tv_sell_m_order"
+                android:layout_width="100dp"
+                android:layout_height="24dp"
+                android:layout_below="@id/tv_sell_m_result"
+                android:layout_marginLeft="12dp"
+                android:layout_marginTop="48dp"
+                android:gravity="center|left"
+                android:textColor="#ccffffff"
+                android:textSize="12sp" />
+
+        </RelativeLayout>
+        <ddr.example.com.newretailandroidclient.widget.view.ZoomImageView
+            android:id="@+id/mv_sell_map"
+            android:layout_width="479.5dp"
+            android:layout_height="479.5dp"
+            android:layout_marginLeft="75dp"
+            android:layout_marginTop="64dp"
+            />
     </RelativeLayout>
 </RelativeLayout>

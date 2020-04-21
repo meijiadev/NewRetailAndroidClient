@@ -1,13 +1,16 @@
 package ddr.example.com.newretailandroidclient.entity.other;
 
+import java.util.List;
+
 public class MapRecord {
-    private String id;
-    private String start_time;
-    private String end_time;
-    private String run_time;
-    private String retail_map;
-    private String retail_num;
-    private String handle;
+    private String id;//id
+    private String start_time;//开始时间
+    private String end_time;//结束时间
+    private String run_time;//运行时长
+    private String retail_map;//售卖地图
+    private String retail_num;//售卖次数
+    private String handle;//操作
+    private List<MapRecordClick> mapRecordClickList;
 
     public String getId() {
         return id;
@@ -63,5 +66,13 @@ public class MapRecord {
 
     public void setHandle(String handle) {
         this.handle = handle;
+    }
+
+    public List<MapRecordClick> getMapRecordClickList() {
+        return mapRecordClickList;
+    }
+
+    public void setMapRecordClickList(List<MapRecordClick> mapRecordClickList) {
+        this.mapRecordClickList = mapRecordClickList;
     }
 }

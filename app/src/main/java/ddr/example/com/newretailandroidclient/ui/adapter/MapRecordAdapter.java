@@ -60,7 +60,8 @@ public class MapRecordAdapter extends BaseAdapter<MapRecord> {
                 .setText(R.id.tv_map_run_time,item.getRun_time())
                 .setText(R.id.tv_map_retail,item.getRetail_map())
                 .setText(R.id.tv_map_retail_num,item.getRetail_num())
-                .setText(R.id.tv_map_handle,item.getHandle());
+                .setText(R.id.tv_map_handle,"查看坐标")
+                .addOnClickListener(R.id.tv_map_handle);
     }
 
     @Nullable

@@ -15,7 +15,6 @@
     <ImageView
         android:layout_width="87.5dp"
         android:layout_height="87.5dp"
-        android:src="@mipmap/cocokele"
         android:layout_marginTop="50.5dp"
         android:layout_centerHorizontal="true"
         android:id="@+id/iv_huo_image"/>

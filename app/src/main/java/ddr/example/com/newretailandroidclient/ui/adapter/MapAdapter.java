@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseAdapter;
 import ddr.example.com.newretailandroidclient.entity.info.MapInfo;
+import ddr.example.com.newretailandroidclient.other.Logger;
 
 /**
  * time : 2019/11/2
@@ -42,6 +43,7 @@ public class MapAdapter extends BaseAdapter<MapInfo>{
         }else {
             helper.getView(R.id.iv_select).setVisibility(View.GONE);
         }
+        Logger.e("图片地址"+item.getBitmap());
         Glide.with(mContext).load(item.getBitmap()).skipMemoryCache(true).diskCacheStrategy(DiskCacheStrategy.NONE).into((ImageView) helper.getView(R.id.iv_map));
         String mapName=item.getMapName();
         mapName=mapName.replaceAll("OneRoute_","");

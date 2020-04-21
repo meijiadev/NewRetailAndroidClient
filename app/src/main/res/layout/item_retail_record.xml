@@ -44,6 +44,8 @@
             android:layout_toRightOf="@id/tv_Settlement_item"
             android:layout_marginLeft="18dp"
             android:layout_centerVertical="true"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:id="@+id/tv_b_number_item"
             />
         <TextView

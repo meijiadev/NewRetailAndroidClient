@@ -30,7 +30,7 @@
             android:layout_marginLeft="18dp"
             android:id="@+id/relative_count"
             >
-            <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
                 android:layout_width="50dp"
                 android:layout_height="24dp"
                 android:text="零售记录"
@@ -38,7 +38,7 @@
                 android:textColor="#ffffff"
                 android:gravity="center"
                 android:id="@+id/tv_retail_record"/>
-            <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+            <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
                 android:layout_width="50dp"
                 android:layout_height="24dp"
                 android:text="退款记录"
@@ -51,7 +51,7 @@
         </RelativeLayout>
 
         </RelativeLayout>
-        <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+        <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
             android:layout_width="50dp"
             android:layout_height="24dp"
             android:text="货道存货"
@@ -89,7 +89,7 @@
                 android:id="@+id/relative_sport"
                 android:visibility="gone"
                 >
-                <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+                <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
                     android:layout_width="91dp"
                     android:layout_height="24dp"
                     android:text="地图运动记录"
@@ -97,7 +97,7 @@
                     android:textColor="#ffffff"
                     android:gravity="center|left"
                     android:id="@+id/tv_sport_record"/>
-                <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+                <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
                     android:layout_width="50dp"
                     android:layout_height="24dp"
                     android:text="报错记录"
@@ -107,7 +107,7 @@
                     android:layout_below="@id/tv_sport_record"
                     android:layout_marginTop="18dp"
                     android:id="@+id/tv_error_record"/>
-                <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
+                <ddr.example.com.newretailandroidclient.widget.textview.BasrTextView
                     android:layout_width="50dp"
                     android:layout_height="24dp"
                     android:text="充电记录"

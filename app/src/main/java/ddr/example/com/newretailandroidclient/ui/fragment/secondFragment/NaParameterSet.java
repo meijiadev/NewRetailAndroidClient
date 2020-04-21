@@ -28,6 +28,7 @@ import ddr.example.com.newretailandroidclient.entity.other.Parameter;
 import ddr.example.com.newretailandroidclient.entity.other.Parameters;
 import ddr.example.com.newretailandroidclient.other.Logger;
 import ddr.example.com.newretailandroidclient.other.SlideButton;
+import ddr.example.com.newretailandroidclient.protocobuf.CmdSchedule;
 import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.adapter.NaparamAdapter;
@@ -143,7 +144,7 @@ public class NaParameterSet extends DDRLazyFragment implements SlideButton.Slide
                 .setType(eConfigItemOptType)
                 .addAllData(configDataList)
                 .build();
-        tcpClient.sendData(null,reqConfigOperational);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqConfigOperational);
 
     }
     //设置导航参数
@@ -200,7 +201,7 @@ public class NaParameterSet extends DDRLazyFragment implements SlideButton.Slide
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqConfigOperational);

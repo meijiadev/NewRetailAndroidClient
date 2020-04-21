@@ -7,8 +7,8 @@ import DDRCommProto.RemoteCmd;
  * 所有命令集合
  */
 public class CmdSchedule {
-    public static String broadcastServerIP="111.230.250.213";  //广域网远程服务器的Ip和端口
-    public static int broadcastServerPort=8800;
+    public static String broadcastServerIP="129.204.18.252";  //广域网远程服务器的Ip和端口
+    public static int broadcastServerPort=9999;
 
 
     /**
@@ -28,7 +28,16 @@ public class CmdSchedule {
      * @param account
      * @return
      */
-    public static BaseCmd.reqLogin localLogin(String account, String password){
+    public static BaseCmd.reqLogin localLogin(String account, String password,int type){
+        BaseCmd.eCltType eCltType;
+        switch (type){
+            case 2:
+                eCltType=BaseCmd.eCltType.eLocalAndroidClient;
+                break;
+            case 4:
+                eCltType=BaseCmd.eCltType.eLocalAIClient;
+                break;
+        }
         BaseCmd.reqLogin mreqLogin=BaseCmd.reqLogin.newBuilder()
                 .setUsername(account)
                 .setUserpwd(password)

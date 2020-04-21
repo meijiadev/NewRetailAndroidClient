@@ -469,7 +469,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                                             .setMode(BaseCmd.eCmdActionMode.eRec)
                                             .setRouteName(ByteString.copyFromUtf8(name))
                                             .build();
-                                    tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eLSMSlamNavigation),reqCmdStartActionMode);
+                                    tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqCmdStartActionMode);
                                     startActivity(CollectingActivity.class);
                                 }else {
                                     toast("请输入地图名字");
@@ -516,7 +516,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 .build();
         BaseCmd.CommonHeader commonHeader=BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader,reqCmdPauseResume);
@@ -555,7 +555,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
         DDRVLNMap.reqTaskOperational reqTaskOperational=DDRVLNMap.reqTaskOperational.newBuilder()
                 .setOptSet(optItem)
                 .build();
-        tcpClient.sendData(null,reqTaskOperational);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqTaskOperational);
     }
 
     /**
@@ -596,7 +596,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 .setBIsDynamicOA(true)
                 .setOptType(eRunSpecificPointTyp)
                 .build();
-        tcpClient.sendData(null,reqRunSpecificPoint);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqRunSpecificPoint);
 
     }
 

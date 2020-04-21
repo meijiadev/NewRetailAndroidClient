@@ -12,14 +12,15 @@ import java.util.List;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseAdapter;
 import ddr.example.com.newretailandroidclient.entity.other.ChongRecord;
+import ddr.example.com.newretailandroidclient.other.Logger;
 
 public class ChongRecordAdapter extends BaseAdapter<ChongRecord> {
-    private TextView tv_id;
-    private TextView tv_cd_order;
-    private TextView tv_dj_result;
-    private TextView tv_cd_start_time;
-    private TextView tv_cd_start_num;
-    private TextView tv_cd_end_time;
+    private TextView tv_id;//id
+    private TextView tv_cd_order;//充电指令
+    private TextView tv_dj_result;//对接结果
+    private TextView tv_cd_start_time;//开始充电时间
+    private TextView tv_cd_start_num;//开始充电电量
+    private TextView tv_cd_end_time;//结束
     private TextView tv_cd_end_num;
     private TextView tv_cd_h_time;
 
@@ -60,9 +61,9 @@ public class ChongRecordAdapter extends BaseAdapter<ChongRecord> {
         helper.setText(R.id.tv_chong_id,item.getId())
                 .setText(R.id.tv_chong_time,item.getCd_order())
                 .setText(R.id.tv_chong_result,item.getDj_result())
-                .setText(R.id.tv_chong_start_time,item.getStart_cd_time())
+                .setText(R.id.tv_chong_start_time,getTime(item.getStart_cd_time()))
                 .setText(R.id.tv_chong_start_num,item.getStart_cd_num())
-                .setText(R.id.tv_chong_end_time,item.getEnd_cd_time())
+                .setText(R.id.tv_chong_end_time,getTime(item.getEnd_cd_time()))
                 .setText(R.id.tv_chong_end_num,item.getEns_cd_num())
                 .setText(R.id.tv_chong_h_time,item.getCd_h_time());
 
@@ -72,5 +73,13 @@ public class ChongRecordAdapter extends BaseAdapter<ChongRecord> {
     @Override
     public ChongRecord getItem(int position) {
         return super.getItem(position);
+    }
+
+    private String getTime(String time){
+        String m_time=time.substring(time.length()-2,time.length());
+        String h_time=time.substring(time.length()-4,time.length()-2);
+        String all_time=h_time+":"+m_time;
+        Logger.e("时间"+all_time);
+        return all_time;
     }
 }

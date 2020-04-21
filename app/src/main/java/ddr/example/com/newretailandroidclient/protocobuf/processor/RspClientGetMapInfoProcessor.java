@@ -57,7 +57,7 @@ public class RspClientGetMapInfoProcessor extends BaseProcessor implements DownL
                 mapInfoList.add(mapInfo);
                 ByteString bytes=mapInfoItemList.get(i).getBkPicAddr();
                 String url=bytes.toStringUtf8();
-                Logger.e("-----url:"+url);
+                Logger.e("-----url:"+url+"类型"+url.getClass().toString()+"----"+mapInfoItemList.get(i).getBkPicAddr().getClass().toString());
                 urlList.add(url);
                 String files=url.split("//")[1];
                 String fileDir= files.split("/")[1];        //文件夹名

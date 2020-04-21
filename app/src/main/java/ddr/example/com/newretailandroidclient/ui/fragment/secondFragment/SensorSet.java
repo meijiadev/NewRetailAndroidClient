@@ -29,6 +29,7 @@ import ddr.example.com.newretailandroidclient.entity.other.Sensors;
 import ddr.example.com.newretailandroidclient.other.InputFilterMinMax;
 import ddr.example.com.newretailandroidclient.other.Logger;
 import ddr.example.com.newretailandroidclient.other.SlideButton;
+import ddr.example.com.newretailandroidclient.protocobuf.CmdSchedule;
 import ddr.example.com.newretailandroidclient.protocobuf.dispatcher.ClientMessageDispatcher;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 /**
@@ -138,7 +139,7 @@ public class SensorSet extends DDRLazyFragment {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqSensorConfigOperational);
@@ -229,7 +230,7 @@ public class SensorSet extends DDRLazyFragment {
                 .setType(eSensorConfigItemOptType)
                 .addAllData(sensorConfigItems)
                 .build();
-        tcpClient.sendData(null,reqSensorConfigOperational);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqSensorConfigOperational);
     }
     //获取导航参数
     private void getNaparmeter(){
@@ -240,7 +241,7 @@ public class SensorSet extends DDRLazyFragment {
                 .build();
         BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
                 .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
+                .setToCltType(BaseCmd.eCltType.eModuleServer)
                 .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
                 .build();
         tcpClient.sendData(commonHeader, reqConfigOperational);
@@ -310,7 +311,7 @@ public class SensorSet extends DDRLazyFragment {
                 .setType(eConfigItemOptType)
                 .addAllData(configDataList)
                 .build();
-        tcpClient.sendData(null,reqConfigOperational);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqConfigOperational);
 
     }
 

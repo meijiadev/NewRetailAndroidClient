@@ -8,6 +8,7 @@ public class RetailRecord {
     private String number;//数量
     private String total;//总价
     private String b_num;//结算编号
+    private int count_num;//总页数
 
     public String getId() {
         return id;
@@ -63,5 +64,13 @@ public class RetailRecord {
 
     public void setB_num(String b_num) {
         this.b_num = b_num;
+    }
+
+    public int getCount_num() {
+        return count_num;
+    }
+
+    public void setCount_num(int count_num) {
+        this.count_num = count_num;
     }
 }
