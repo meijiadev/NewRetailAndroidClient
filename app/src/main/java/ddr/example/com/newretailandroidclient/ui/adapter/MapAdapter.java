@@ -48,7 +48,8 @@ public class MapAdapter extends BaseAdapter<MapInfo>{
         }else {
             Logger.e("图片地址"+item.getBitmap());
             Glide.with(mContext).load(item.getBitmap()).skipMemoryCache(false).diskCacheStrategy(DiskCacheStrategy.NONE).into((ImageView) helper.getView(R.id.iv_map));
-        }        String mapName=item.getMapName();
+        }
+        String mapName=item.getMapName();
         mapName=mapName.replaceAll("OneRoute_","");
         helper.setText(R.id.tv_map_name,mapName)
                 .setText(R.id.tv_size,String.valueOf(item.getWidth())+"x"+String.valueOf(item.getHeight())+"m²")
@@ -64,7 +65,6 @@ public class MapAdapter extends BaseAdapter<MapInfo>{
         }else{
             helper.getView(R.id.iv_select).setBackgroundResource(R.mipmap.nocheckedwg);
         }
-
     }
 
     @Override
