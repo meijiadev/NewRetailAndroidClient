@@ -59,7 +59,7 @@ public  class LoginActivity extends DDRActivity {
 
     public  int tcpPort = 0;
     private String accountName = "", passwordName = "";
-    private String retailName="retail_1",retailPassword="retail_1";
+    private String retailName="retail_2",retailPassword="retail_2";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
