@@ -30,6 +30,7 @@ import DDRCommProto.BaseCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
+import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
@@ -50,6 +51,7 @@ import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.adapter.MapRecordAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.PageAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.TargetPointAdapter;
+import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 import ddr.example.com.newretailandroidclient.widget.textview.BasrTextView;
 import ddr.example.com.newretailandroidclient.widget.view.CustomPopuWindow;
 import ddr.example.com.newretailandroidclient.widget.view.MapImageView;
@@ -112,6 +114,7 @@ public class SellMapSportRecord extends DDRLazyFragment {
 
     private MapFileStatus mapFileStatus;
     private List<MapInfo> mapInfos = new ArrayList<>(); //地图列表
+//    private List<MapInfo> mapInfoList=new ArrayList<>();
     private String bitmapPath;          // 点击的图片存储地址
     private Bitmap lookBitmap;          //点击的图片
 
@@ -174,11 +177,14 @@ public class SellMapSportRecord extends DDRLazyFragment {
         postSellMap(0,9);
         mapRecordS= MapRecordS.getInstance();
         mapFileStatus = MapFileStatus.getInstance();
+//        mapInfoList=mapFileStatus.getMapInfos();
         onItemClick();
         isChecked();
         tv_sell_map_all.isChecked(true);
         targetPointAdapter = new TargetPointAdapter(R.layout.item_show_recycler);
         onShowItemClick();
+        mv_sell_map.setRotaion(false);
+        Logger.e("------收到"+mapFileStatus.getMapInfos().size());
         transformMapInfo(mapFileStatus.getMapInfos());
     }
     /**
@@ -208,8 +214,20 @@ public class SellMapSportRecord extends DDRLazyFragment {
                 }
                 break;
             case R.id.tv_d_m_excel:
-                isExcel=true;
-                postSellMap(0,100);
+                new InputDialog.Builder(getActivity())
+                        .setTitle("是否输出日志到本地")
+                        .setEditVisibility(View.GONE)
+                        .setListener(new InputDialog.OnListener() {
+                            @Override
+                            public void onConfirm(BaseDialog dialog, String content) {
+                                isExcel=true;
+                                postSellMap(0,100);
+                            }
+                            @Override
+                            public void onCancel(BaseDialog dialog) {
+                                toast("取消");
+                            }
+                        }).show();
                 break;
             case R.id.tv_sell_map_all:
                 Logger.e("点击全部");
@@ -253,7 +271,12 @@ public class SellMapSportRecord extends DDRLazyFragment {
                 setResultClick(3);
                 break;
             case R.id.iv_sell_m_quit:
+                for (TargetPoint targetPoint : targetPointList) {
+                    targetPoint.setMultiple(false);
+                }
+                tv_all_selected.setCompoundDrawablesWithIntrinsicBounds(null, null, getResources().getDrawable(R.mipmap.item_hide), null);
                 relative_sell_map.setVisibility(View.GONE);
+                targetPointList=new ArrayList<>();
                 break;
         }
     }
@@ -349,21 +372,29 @@ public class SellMapSportRecord extends DDRLazyFragment {
                     mapRecordS.setItemPostion(position);
                     relative_sell_map.setVisibility(View.VISIBLE);
                     mapRecordClickList=mapRecordList.get(position).getMapRecordClickList();
-                    Logger.e("查看地图坐标长度"+mapRecordClickList.size());
+                    Logger.e("查看地图坐标长度"+mapRecordClickList.size()+"----"+mapInfos.size());
                     if (mapInfos.size()>0){
                         for (int i=0;i<mapInfos.size();i++){
                             if (mapInfos.get(i).getMapName().equals(mapRecordList.get(position).getRetail_map())){
-                                FileInputStream fis = null;
-                                try {
-                                    fis = new FileInputStream(mapInfos.get(i).getBitmap());
-                                    Logger.e("地址"+fis);
-                                    lookBitmap= BitmapFactory.decodeStream(fis);
-                                    mv_sell_map.setImageBitmap(lookBitmap);
-                                } catch (FileNotFoundException e) {
-                                    e.printStackTrace();
-                                } catch (NullPointerException e) {
-                                    e.printStackTrace();
+//                                Logger.e("图片地址"+mapRecordList.get(position).getRetail_map()+i);
+                                byte[]bytes=mapInfos.get(i).getBytes();
+                                if (bytes!=null){
+                                    Logger.e("图片字节流");
+                                    lookBitmap=getBitmapFromByte(bytes);
+                                }else {
+                                    FileInputStream fis = null;
+                                    try {
+                                        fis = new FileInputStream(mapInfos.get(i).getBitmap());
+                                        Logger.e("地址"+fis);
+                                        lookBitmap= BitmapFactory.decodeStream(fis);
+                                    } catch (FileNotFoundException e) {
+                                        e.printStackTrace();
+                                    } catch (NullPointerException e) {
+                                        e.printStackTrace();
+                                    }
                                 }
+                                mv_sell_map.setImageBitmap(lookBitmap);
+                                mv_sell_map.invalidate();
                             }
                         }
                     }
@@ -394,7 +425,7 @@ public class SellMapSportRecord extends DDRLazyFragment {
         }else {
             tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eAIServer),reqGetMapRecords);
         }
-        toast("发送时间"+ss);
+//        toast("发送时间"+ss);
 
 
     }
@@ -581,7 +612,8 @@ public class SellMapSportRecord extends DDRLazyFragment {
     public void transformMapInfo(List<MapInfo> infoList) {
         for (int i = 0; i < infoList.size(); i++) {
             String dirName = infoList.get(i).getMapName();
-            String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" + dirName + "/" + "bkPic.png";
+            Logger.e("地图名"+dirName);
+            String pngPath = GlobalParameter.ROBOT_FOLDER + dirName + "/" + "bkPic.png";
             if (pngPath != null) {
                 infoList.get(i).setBitmap(pngPath);
             } else {
@@ -623,12 +655,29 @@ public class SellMapSportRecord extends DDRLazyFragment {
 
         toast("Excel已导出至"+filePath);
 
-        filePath = "/sdcard/AndroidExcelDemo";
+        filePath = "/sdcard/新零售机器列表";
+    }
+
+    /**
+     * 字节转图片
+     * @param temp
+     * @return
+     */
+
+    public Bitmap getBitmapFromByte(byte[] temp){
+        if(temp != null){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(temp, 0, temp.length);
+            return bitmap;
+        }else{
+            return null;
+        }
     }
     @Override
     protected void onRestart() {
         super.onRestart();
-        postSellMap(0,9);
+        postSellMap((nowPagepostion*8+nowPagepostion),9);
         Logger.e("刷新数据");
     }
+
+
 }

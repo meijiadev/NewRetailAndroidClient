@@ -5,14 +5,14 @@ import ddr.example.com.newretailandroidclient.other.Logger;
 /**
  * 接收基础信息
  */
-public class NotifyBaseStatusEx {
-    public static NotifyBaseStatusEx notifyBaseStatusEx;
+public class NotifyBaseStatusExTwo {
+    public static NotifyBaseStatusExTwo notifyBaseStatusEx;
 
-    public static NotifyBaseStatusEx getInstance(){
+    public static NotifyBaseStatusExTwo getInstance(){
         if (notifyBaseStatusEx==null){
-            synchronized (NotifyBaseStatusEx.class){
+            synchronized (NotifyBaseStatusExTwo.class){
                 if (notifyBaseStatusEx==null){
-                    notifyBaseStatusEx=new NotifyBaseStatusEx();
+                    notifyBaseStatusEx=new NotifyBaseStatusExTwo();
                 }
             }
         }
@@ -39,7 +39,7 @@ public class NotifyBaseStatusEx {
     private int chargingType;             //  1:自动充电 2：手动充电
     private int eTaskMode;
     private int temopTaskNum;
-    private String robotid;
+    private String rotbotid;
 
     /**
      * 异常状态  1：内存错误 ， 2：试图采集的地图名已存在 ，3：采集模式下文件IO错误，4：自动模式选择的地图不存在，5：自动模式重定位失败，
@@ -241,11 +241,11 @@ public class NotifyBaseStatusEx {
         this.temopTaskNum = temopTaskNum;
     }
 
-    public String getRobotid() {
-        return robotid;
+    public String getRotbotid() {
+        return rotbotid;
     }
 
-    public void setRobotid(String robotid) {
-        this.robotid = robotid;
+    public void setRotbotid(String rotbotid) {
+        this.rotbotid = rotbotid;
     }
 }

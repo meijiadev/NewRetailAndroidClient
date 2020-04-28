@@ -37,6 +37,11 @@ public class RspRemoteLoginProcessor extends BaseProcessor {
                     Logger.e("udid:"+lsEntity.getUdid()+"name:"+lsEntity.getName());
                     DevicesInfo.Device device=new DevicesInfo.Device(lsEntity.getUdid(),lsEntity.getName(),false);
                     devices.add(device);
+                    if (lsEntity.getUdid().equals("null")){
+
+                    }else {
+                        Logger.e("連接成功，机器人列表爲空");
+                    }
                 }
                 devicesInfo.setDevices(devices);
                 EventBus.getDefault().postSticky(new MessageEvent(MessageEvent.Type.wanLoginSuccess));

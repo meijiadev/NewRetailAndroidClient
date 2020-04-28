@@ -73,6 +73,8 @@ public class MessageEvent {
         updataSellErrorRecord,//获取商品报错记录
         updataSellChongRecord,//获取商品充电记录
         updataSellMapRecord,//获取地图记录
+        updataRetailAuto,//获取自动售卖结果
+        updataNotifyAuto,//获取是否自动售卖
 
 
 

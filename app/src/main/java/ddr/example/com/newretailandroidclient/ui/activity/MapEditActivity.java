@@ -220,6 +220,14 @@ public class MapEditActivity extends DDRActivity {
 
     }
 
+    public Bitmap getBitmapFromByte(byte[] temp){
+        if(temp != null){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(temp, 0, temp.length);
+            return bitmap;
+        }else{
+            return null;
+        }
+    }
 
     @Override
     public boolean statusBarDarkFont() {

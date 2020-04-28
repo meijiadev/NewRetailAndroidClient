@@ -41,6 +41,7 @@ import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.download.FileUtil;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.MapFileStatus;
@@ -1079,13 +1080,18 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
                 .setMessage("加载" + mapName + "地图信息中")
                 .show();
         FileInputStream fis = null;
-        try {
-            fis = new FileInputStream(mapInfos.get(position).getBitmap());
-            lookBitmap = BitmapFactory.decodeStream(fis);
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
+        byte[]bytes=mapInfos.get(position).getBytes();
+        if (bytes!=null){
+            lookBitmap=getBitmapFromByte(bytes);
+        }else {
+            try {
+                fis = new FileInputStream(mapInfos.get(position).getBitmap());
+                lookBitmap = BitmapFactory.decodeStream(fis);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }
         }
         String name = mapInfos.get(position).getMapName();
         name = name.replaceAll("OneRoute_", "");
@@ -1193,6 +1199,14 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
     }
 
 
+    public Bitmap getBitmapFromByte(byte[] temp){
+        if(temp != null){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(temp, 0, temp.length);
+            return bitmap;
+        }else{
+            return null;
+        }
+    }
     /**
      * 发送重定位
      */
@@ -1493,7 +1507,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
      */
     public void checkFilesAllName(List<String> downloadMapNames) {
         if (downloadMapNames != null) {
-            File file = new File(Environment.getExternalStorageDirectory().getPath() + "/" + "机器人");
+            File file = new File(GlobalParameter.ROBOT_FOLDER );
             if (file.exists()) {
                 File[] files = file.listFiles();
                 if (files == null) {
@@ -1519,7 +1533,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
     public void transformMapInfo(List<MapInfo> infoList) {
         for (int i = 0; i < infoList.size(); i++) {
             String dirName = infoList.get(i).getMapName();
-            String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" + dirName + "/" + "bkPic.png";
+            String pngPath = GlobalParameter.ROBOT_FOLDER + dirName + "/" + "bkPic.png";
             if (pngPath != null) {
                 infoList.get(i).setBitmap(pngPath);
                 Logger.e("设置的图片地址"+infoList.get(i).getBitmap()+pngPath+"------"+dirName);
@@ -1704,4 +1718,6 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
 
         }
     }
+
+
 }

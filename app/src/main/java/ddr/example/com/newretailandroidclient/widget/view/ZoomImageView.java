@@ -239,6 +239,7 @@ public class ZoomImageView extends View {
                     break;
             }
         }
+        currentStatus=STATUS_ZOOM_OUT;
         PointView.getInstance(context).drawPoint(canvas,this);
         LineView.getInstance(context).drawLine(canvas,this);
         GridLayerView.getInstance(this).drawGrid(canvas);
@@ -353,8 +354,15 @@ public class ZoomImageView extends View {
         currentBitmapWidth = scaledWidth;
         currentBitmapHeight = scaledHeight;
         canvas.drawBitmap(sourceBitmap, matrix, null);
-        setRotation(rotation);
+        if (isRotaion()){
+            setRotation(rotation);
+        }else {
+//            Logger.e("不需要旋转");
+        }
+
     }
+
+
 
     /**
      * 对图片进行平移处理
@@ -486,5 +494,16 @@ public class ZoomImageView extends View {
         double delta_y = (event.getY(0) - event.getY(1));
         double radians = Math.atan2(delta_y, delta_x);
         return (float) Math.toDegrees(radians);
+    }
+    private boolean isRotaion=true;
+    /**
+     * 设置图片是否旋转
+     */
+    public boolean isRotaion() {
+        return isRotaion;
+    }
+
+    public void setRotaion(boolean rotaion) {
+        isRotaion = rotaion;
     }
 }

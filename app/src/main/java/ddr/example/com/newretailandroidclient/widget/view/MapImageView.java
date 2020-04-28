@@ -26,6 +26,7 @@ import java.util.List;
 import DDRCommProto.BaseCmd;
 import DDRVLNMapProto.DDRVLNMap;
 import ddr.example.com.newretailandroidclient.R;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.info.MapFileStatus;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
@@ -107,7 +108,7 @@ public class MapImageView extends GLView {
     public void setMapBitmap(String mapName){
         this.mapName=mapName;
         Logger.e("设置图片");
-        String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" + mapName + "/" + "bkPic.png";
+        String pngPath =  GlobalParameter.ROBOT_FOLDER + mapName + "/" + "bkPic.png";
         FileInputStream fis = null;
         try {
             fis = new FileInputStream(pngPath);

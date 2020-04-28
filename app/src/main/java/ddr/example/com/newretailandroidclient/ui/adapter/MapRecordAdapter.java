@@ -57,8 +57,8 @@ public class MapRecordAdapter extends BaseAdapter<MapRecord> {
         helper.setText(R.id.tv_map_id,item.getId())
                 .setText(R.id.tv_map_start_time,item.getStart_time())
                 .setText(R.id.tv_map_end_time,item.getEnd_time())
-                .setText(R.id.tv_map_run_time,item.getRun_time())
-                .setText(R.id.tv_map_retail,item.getRetail_map())
+                .setText(R.id.tv_map_run_time,item.getRun_time()+"min")
+                .setText(R.id.tv_map_retail,subString(item.getRetail_map()))
                 .setText(R.id.tv_map_retail_num,item.getRetail_num())
                 .setText(R.id.tv_map_handle,"查看坐标")
                 .addOnClickListener(R.id.tv_map_handle);
@@ -68,5 +68,16 @@ public class MapRecordAdapter extends BaseAdapter<MapRecord> {
     @Override
     public MapRecord getItem(int position) {
         return super.getItem(position);
+    }
+
+    /**
+     * 截取重复部分OneRoute_
+     */
+    private String subString(String value) {
+        String v = null;
+        if (value.length() > 0) {
+            v = value.substring(9, value.length());
+        }
+        return v;
     }
 }

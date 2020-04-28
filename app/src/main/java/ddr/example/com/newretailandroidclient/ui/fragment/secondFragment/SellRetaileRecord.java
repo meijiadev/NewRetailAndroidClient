@@ -28,6 +28,7 @@ import DDRCommProto.BaseCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
+import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
@@ -42,6 +43,7 @@ import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.adapter.PageAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.RetailRecordAdapter;
+import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 
 /**
  * time：2020/04/01
@@ -167,8 +169,20 @@ public class SellRetaileRecord extends DDRLazyFragment {
                 }
                 break;
             case R.id.tv_d_excel:
-                isExcel=true;
-                postSellData(0,100);
+                new InputDialog.Builder(getActivity())
+                        .setTitle("是否输出日志到本地")
+                        .setEditVisibility(View.GONE)
+                        .setListener(new InputDialog.OnListener() {
+                            @Override
+                            public void onConfirm(BaseDialog dialog, String content) {
+                                isExcel=true;
+                                postSellData(0,100);
+                            }
+                            @Override
+                            public void onCancel(BaseDialog dialog) {
+                                toast("取消");
+                            }
+                        }).show();
                 break;
         }
     }
@@ -210,7 +224,7 @@ public class SellRetaileRecord extends DDRLazyFragment {
         SimpleDateFormat   formatter   =   new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
         Date date=new Date(System.currentTimeMillis());//系统小时数
         String ss=formatter.format(date);//获取当前时间
-        toast("设置时间"+ss);
+//        toast("设置时间"+ss);
         retailRecordAdapter.setNewData(retailRecordList);
     }
     /**
@@ -275,7 +289,7 @@ public class SellRetaileRecord extends DDRLazyFragment {
             Date date=new Date(System.currentTimeMillis());//系统小时数
             String ss=formatter.format(date);//获取当前时间
             Logger.e("发送时间"+ ss);
-            toast("发送时间"+ ss);
+//            toast("发送时间"+ ss);
         }
 
 
@@ -305,13 +319,13 @@ public class SellRetaileRecord extends DDRLazyFragment {
 
         Logger.e("excel已导出至：" + filePath);
 
-        filePath = "/sdcard/AndroidExcelDemo";
+        filePath = "/sdcard/新零售机器列表";
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        postSellData(0,9);
+        postSellData((nowPagepostion*8+nowPagepostion),9);
         Logger.e("刷新数据");
     }
 }

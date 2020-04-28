@@ -20,6 +20,7 @@ import DDRCommProto.BaseCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
+import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
@@ -34,6 +35,7 @@ import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.adapter.ErrorRecordAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.PageAdapter;
+import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 
 /**
  * time:2019/10/26
@@ -147,8 +149,20 @@ public class SellErrorRecord extends DDRLazyFragment {
                 }
                 break;
             case R.id.tv_d_e_excel:
-                isExcel=true;
-                postSellError(0,100);
+                new InputDialog.Builder(getActivity())
+                        .setTitle("是否输出日志到本地")
+                        .setEditVisibility(View.GONE)
+                        .setListener(new InputDialog.OnListener() {
+                            @Override
+                            public void onConfirm(BaseDialog dialog, String content) {
+                                isExcel=true;
+                                postSellError(0,100);
+                            }
+                            @Override
+                            public void onCancel(BaseDialog dialog) {
+                                toast("取消");
+                            }
+                        }).show();
                 break;
         }
     }
@@ -157,7 +171,7 @@ public class SellErrorRecord extends DDRLazyFragment {
      */
     private void getData(){
         errorRecordList=errorRecordS.getErrorRecordList();
-        Logger.e("数量"+errorRecordList.size());
+        Logger.e("数量"+errorRecordList.size()+errorRecordS.getCountNum());
         allPageNumber=errorRecordS.getCountNum();
         int ysnum=allPageNumber%9;//余数
         if(ysnum==0){
@@ -261,7 +275,7 @@ public class SellErrorRecord extends DDRLazyFragment {
 
         String excelFileName = "/报错记录.xls";
 
-        String[] title = {"ID","报错时间", "错误类型"};
+        String[] title = {"ID","报错时间"};
 
         String sheetName = "报错记录";
 
@@ -275,12 +289,12 @@ public class SellErrorRecord extends DDRLazyFragment {
 
         toast("Excel已导出至"+filePath);
 
-        filePath = "/sdcard/AndroidExcelDemo";
+        filePath = "/sdcard/新零售机器列表";
     }
     @Override
     protected void onRestart() {
         super.onRestart();
-        postSellError(0,9);
+        postSellError((nowPagepostion*8+nowPagepostion),9);
         Logger.e("刷新数据");
     }
 }

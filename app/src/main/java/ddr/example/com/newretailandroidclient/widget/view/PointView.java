@@ -36,6 +36,7 @@ public class PointView {
     private TargetPoint targetPoint;
     private NotifyBaseStatusEx notifyBaseStatusEx;
     private PathLine.PathPoint pathPoint;
+    private List<TargetPoint> targetPointsAuto;
     /**
      *用于裁剪源图像的矩形（可重复使用）。
      */
@@ -102,6 +103,10 @@ public class PointView {
      */
     public void set2TouchPoints(List<TargetPoint> selectPoints){
         this.selectPoints=selectPoints;
+    }
+
+    public void setTargetPointsAuto(List<TargetPoint> targetPointsAuto) {
+        this.targetPointsAuto = targetPointsAuto;
     }
 
     @Subscribe(threadMode = ThreadMode.BACKGROUND)
@@ -173,6 +178,7 @@ public class PointView {
                     xyEntity=zoomImageView.coordinate2View(xyEntity.getX(),xyEntity.getY());
                     int x= (int) xyEntity.getX();
                     int y= (int) xyEntity.getY();
+//                    Logger.e("------"+x +"  ----"+y);
                     mRectSrc=new Rect(0,0,40,40);
                     mRectDst=new Rect(x-20,y-20,x+20,y+20);
                     matrix.setRotate(-targetPoints1.get(i).getTheta());
@@ -225,6 +231,23 @@ public class PointView {
                     canvas.drawText(selectPoints.get(i).getName(),x,y+15,textPaint);
             }
         }
+        if (targetPointsAuto !=null){
+            for (int i=0;i<targetPointsAuto.size();i++){
+                if (targetPointsAuto.get(i).isMultiple()){
+                    XyEntity xyEntity=zoomImageView.toXorY(targetPointsAuto.get(i).getX(),targetPointsAuto.get(i).getY());
+                    xyEntity=zoomImageView.coordinate2View(xyEntity.getX(),xyEntity.getY());
+                    int x= (int) xyEntity.getX();
+                    int y= (int) xyEntity.getY();
+//                    Logger.e("------"+x +"  ----"+y);
+                    mRectSrc=new Rect(0,0,40,40);
+                    mRectDst=new Rect(x-20,y-20,x+20,y+20);
+                    matrix.setRotate(-targetPointsAuto.get(i).getTheta());
+                    targetBitmap1=Bitmap.createBitmap(targetBitmap,0,0,40,40,matrix,true);
+                    canvas.drawBitmap(targetBitmap1,mRectSrc,mRectDst,pointPaint);
+                    canvas.drawText(targetPointsAuto.get(i).getName(),x,y+15,textPaint);
+                }
+            }
+        }
 
     }
 
@@ -268,6 +291,7 @@ public class PointView {
         selectPoints=null;
         isRuning=false;
         pathPoint=null;
+        targetPointsAuto=null;
     }
 
 }

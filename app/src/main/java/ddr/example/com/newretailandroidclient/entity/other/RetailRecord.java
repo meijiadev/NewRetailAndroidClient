@@ -3,7 +3,7 @@ package ddr.example.com.newretailandroidclient.entity.other;
 public class RetailRecord {
     private String id;//id
     private String name;//商品名称
-    private String Settlement;//结算方式
+    private int Settlement;//结算方式
     private String price;//单价
     private String number;//数量
     private String total;//总价
@@ -26,13 +26,6 @@ public class RetailRecord {
         this.name = name;
     }
 
-    public String getSettlement() {
-        return Settlement;
-    }
-
-    public void setSettlement(String settlement) {
-        Settlement = settlement;
-    }
 
     public String getPrice() {
         return price;
@@ -72,5 +65,13 @@ public class RetailRecord {
 
     public void setCount_num(int count_num) {
         this.count_num = count_num;
+    }
+
+    public int getSettlement() {
+        return Settlement;
+    }
+
+    public void setSettlement(int settlement) {
+        Settlement = settlement;
     }
 }

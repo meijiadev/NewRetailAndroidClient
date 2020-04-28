@@ -253,17 +253,26 @@ public class CustomPopuWindow implements PopupWindow.OnDismissListener{
     public void dissmiss(){
 
         if(mOnDismissListener!=null){
+            Logger.e("-----11111");
             mOnDismissListener.onDismiss();
         }
         //如果设置了背景变暗，那么在dissmiss的时候需要还原
         if(mWindow!=null){
+            Logger.e("-----222222");
             WindowManager.LayoutParams params = mWindow.getAttributes();
             params.alpha = 1.0f;
             mWindow.setAttributes(params);
         }
-        if(mPopupWindow!=null && mPopupWindow.isShowing()){
+//        if(mPopupWindow!=null && mPopupWindow.isShowing()){
+//            Logger.e("-----333333");
+//            mPopupWindow.dismiss();
+//            Logger.e("------444444");
+//        }
+        if (mPopupWindow!=null){
+            Logger.e("------555555"+mPopupWindow);
             mPopupWindow.dismiss();
         }
+        Logger.e("-----66666"+mPopupWindow);
     }
 
     public PopupWindow getPopupWindow() {

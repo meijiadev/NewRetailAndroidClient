@@ -23,6 +23,7 @@ import com.yhao.floatwindow.FloatWindow;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import DDRAIServiceProto.DDRAIServiceCmd;
 import DDRCommProto.BaseCmd;
 
 import androidx.viewpager.widget.ViewPager;
@@ -43,7 +44,9 @@ import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
+import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusExTwo;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyEnvInfo;
+import ddr.example.com.newretailandroidclient.entity.info.NotifyEnvInfoTwo;
 import ddr.example.com.newretailandroidclient.entity.other.UdpIp;
 import ddr.example.com.newretailandroidclient.glide.ImageLoader;
 import ddr.example.com.newretailandroidclient.helper.ActivityStackManager;
@@ -94,6 +97,10 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     TextView iv_jt_def;
     @BindView(R.id.iv_yk_def)
     TextView iv_yk_def;
+    @BindView(R.id.tv_auto_retail)
+    TextView tv_auto_retail;
+    @BindView(R.id.tv_allControl)
+    TextView tv_allControl;
 
     private TcpClient tcpClient;
     private NotifyBaseStatusEx notifyBaseStatusEx;
@@ -118,7 +125,13 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     private String xsu;
     private String jsu;
     private boolean ishaveChecked = false;
+    private boolean isAutoRetail=false;
     private GlobalParameter globalParameter;
+    private NotifyBaseStatusExTwo notifyBaseStatusExTwo;
+    private int batteryNum=0;
+    private int batteryNum2=0;
+    private NotifyEnvInfoTwo notifyEnvInfoTwo;
+    private boolean isWritePassword=false;
 
 
     /**
@@ -152,19 +165,32 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
             case updateAiPort:
                 udpIp1= (UdpIp) messageEvent.getData();
 //                Logger.e(globalParameter.isLan()+"是否局域网");
-//                Logger.e("ip"+udpIp1.getIp()+"端口"+udpIp1.getPort());
+                Logger.e("AIip"+udpIp1.getIp()+"端口"+udpIp1.getPort());
                 if (globalParameter.isLan()) {
                     tcpAiClient.createConnect(udpIp1.getIp(),udpIp1.getPort());
                 }else {
-//                    Logger.e("广域网不需要登陆AI");
+                    Logger.e("广域网不需要登陆AI");
                 }
                 break;
             case tcpAiConnected:
+                Logger.e("TcpAI服务开始连接");
                 tcpAiClient.sendData(null, CmdSchedule.localLogin("admin_android","admin_android",4));
                 break;
             case LoginAiSuccess:
-                toast("AI服务连接成功");
+                toast("售卖服务连接成功");
                 UdpClient.getInstance(context,ClientMessageDispatcher.getInstance()).close();
+                break;
+            case updataRetailAuto:
+                toast(globalParameter.getAutoReatilResult());
+                break;
+            case updataNotifyAuto:
+                if (globalParameter.getNotiAutoResult().equals("失能")){
+                    tv_auto_retail.setBackgroundResource(R.drawable.bg_task_cz);
+                    isAutoRetail=false;
+                }else {
+                    tv_auto_retail.setBackgroundResource(R.drawable.bg_auto_ratail);
+                    isAutoRetail=true;
+                }
                 break;
         }
 
@@ -194,11 +220,14 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
 
     @Override
     protected void initData() {
+        globalParameter=GlobalParameter.getInstance();
         receiveAiBroadcast();
         tcpClient = TcpClient.getInstance(context, ClientMessageDispatcher.getInstance());
         tcpAiClient=TcpAiClient.getInstance(context,ClientMessageDispatcher.getInstance());
-        globalParameter=GlobalParameter.getInstance();
         notifyBaseStatusEx = NotifyBaseStatusEx.getInstance();
+        notifyBaseStatusExTwo=NotifyBaseStatusExTwo.getInstance();
+        notifyEnvInfoTwo=NotifyEnvInfoTwo.getInstance();
+        notifyEnvInfo=NotifyEnvInfo.getInstance();
         ImageLoader.clear(this); //清除图片缓存
         tcpClient.requestFile();     //请求所有地图
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
@@ -226,7 +255,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
     }
 
 
-    @OnClick({R.id.status, R.id.mapmanager, R.id.taskmanager, R.id.highset,R.id.tv_quit,R.id.tv_shutdown,R.id.sell_data})
+    @OnClick({R.id.status, R.id.mapmanager, R.id.taskmanager, R.id.highset,R.id.tv_quit,R.id.tv_shutdown,R.id.sell_data,R.id.tv_auto_retail,R.id.tv_allControl})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.status:
@@ -243,7 +272,30 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
                 vpHomePager.setCurrentItem(3);
                 break;
             case R.id.sell_data:
-                vpHomePager.setCurrentItem(4);
+                if (!isWritePassword){
+                    new InputDialog.Builder(getActivity())
+                            .setTitle("请输入密码")
+                            .setEditVisibility(View.VISIBLE)
+                            .setListener(new InputDialog.OnListener() {
+                                @Override
+                                public void onConfirm(BaseDialog dialog, String content) {
+                                    if (content.equals("admin")){
+                                        vpHomePager.setCurrentItem(4);
+                                        isWritePassword=true;
+                                    }else {
+                                        toast("密码错误，请重新输入");
+                                    }
+                                }
+                                @Override
+                                public void onCancel(BaseDialog dialog) {
+                                    vpHomePager.setCurrentItem(0);
+                                }
+                            }).show();
+                }else {
+                    Logger.e("----已輸入密碼");
+                    vpHomePager.setCurrentItem(4);
+                }
+
                 break;
             case R.id.tv_quit:
                 new InputDialog.Builder(getActivity())
@@ -253,6 +305,9 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
                             @Override
                             public void onConfirm(BaseDialog dialog, String content) {
                                 onBack();
+//                                ActivityStackManager.getInstance().finishAllActivities();
+//                                tcpClient.onDestroy();
+//                                tcpAiClient.onDestroy();
                             }
                             @Override
                             public void onCancel(BaseDialog dialog) {
@@ -273,6 +328,32 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
                         toast("机器人正在重启中，请退出到登陆页面等待重启完成后再重新连接");
                     }
                 }).show();
+                break;
+            case R.id.tv_auto_retail:
+                new InputDialog.Builder(getActivity())
+                        .setTitle("自动售卖开关")
+                        .setEditVisibility(View.GONE)
+                        .setListener(new InputDialog.OnListener() {
+                            @Override
+                            public void onConfirm(BaseDialog dialog, String content) {
+                                if (!isAutoRetail){
+                                    postAutoRetail(0);
+                                    isAutoRetail=true;
+                                }else {
+                                    postAutoRetail(1);
+                                    isAutoRetail=false;
+                                }
+                                toast("发送成功");
+                            }
+                            @Override
+                            public void onCancel(BaseDialog dialog) {
+                                toast("取消发送");
+                            }
+                        }).show();
+
+                break;
+            case R.id.tv_allControl:
+//                showAllControlPopupWindow();
                 break;
         }
         isChecked();
@@ -349,47 +430,153 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
 
     private void initStatusBar() {
         if (notifyBaseStatusEx != null) {
-            DecimalFormat df = new DecimalFormat("0");
-            DecimalFormat format = new DecimalFormat("0.00");
-            currentMap = notifyBaseStatusEx.getCurroute();
-            currentTask = notifyBaseStatusEx.getCurrpath();
-            xsu=String.valueOf(format.format(notifyBaseStatusEx.getPosLinespeed()));
-            jsu=String.valueOf(format.format(notifyBaseStatusEx.getPosAngulauspeed()));
-            if(tv_xsu!=null && tv_jsu!=null){
-                tv_xsu.setText("线速度："+xsu+" m/s");
-                tv_jsu.setText("角速度："+jsu+" 弧度/秒");
+            try {
+                DecimalFormat df = new DecimalFormat("0");
+                DecimalFormat format = new DecimalFormat("0.00");
+                currentMap = notifyBaseStatusEx.getCurroute();
+                currentTask = notifyBaseStatusEx.getCurrpath();
+                xsu=String.valueOf(format.format(notifyBaseStatusEx.getPosLinespeed()));
+                jsu=String.valueOf(format.format(notifyBaseStatusEx.getPosAngulauspeed()));
+                if(tv_xsu!=null && tv_jsu!=null){
+                    tv_xsu.setText("线速度："+xsu+" m/s");
+                    tv_jsu.setText("角速度："+jsu+" 弧度/秒");
+                }
+//                if (notifyEnvInfo.getBatt()!=0 && String.valueOf(notifyEnvInfo.getBatt())!=null){
+//                    batteryNum=Integer.parseInt(df.format(notifyEnvInfo.getBatt()));
+//                    tv_all_num1.setText(batteryNum+"%");
+//                }
+//                if (notifyBaseStatusEx.getRobotid()!=null){
+//                    tv_all_name1.setText(notifyBaseStatusEx.getRobotid());
+//                }
+                switch (notifyBaseStatusEx.getStopStat()) {
+                    case 4:
+                        iv_jt_def.setVisibility(View.VISIBLE);
+                        iv_jt_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.jt_nodef),null,null);
+                        iv_yk_def.setVisibility(View.GONE);
+                        iv_jt_def.setTextColor(getResources().getColor(R.color.white));
+                        iv_yk_def.setTextColor(getResources().getColor(R.color.text_gray));
+//                        iv_all_jt1.setImageResource(R.mipmap.jt_check);
+                        break;
+                    case 8:
+                        iv_yk_def.setVisibility(View.VISIBLE);
+                        iv_jt_def.setVisibility(View.GONE);
+                        iv_yk_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.yk_nodef),null,null);
+                        iv_jt_def.setTextColor(getResources().getColor(R.color.text_gray));
+                        iv_yk_def.setTextColor(getResources().getColor(R.color.white));
+//                        iv_all_jt1.setImageResource(R.mipmap.jt_default);
+                        break;
+                    case 12:
+                        iv_jt_def.setVisibility(View.VISIBLE);
+                        iv_yk_def.setVisibility(View.VISIBLE);
+                        iv_jt_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.jt_nodef),null,null);
+                        iv_yk_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.yk_nodef),null,null);
+                        iv_jt_def.setTextColor(getResources().getColor(R.color.white));
+                        iv_yk_def.setTextColor(getResources().getColor(R.color.white));
+//                        iv_all_jt1.setImageResource(R.mipmap.jt_check);
+                        break;
+                    case 0:
+                        iv_jt_def.setVisibility(View.GONE);
+                        iv_yk_def.setVisibility(View.GONE);
+                        iv_jt_def.setTextColor(getResources().getColor(R.color.text_gray));
+                        iv_yk_def.setTextColor(getResources().getColor(R.color.text_gray));
+//                        iv_all_jt1.setImageResource(R.mipmap.jt_default);
+                        break;
+                }
+//                switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
+//                    case 0:
+//                        tv_all_status2.setText("自标定中");
+//                        //自标定
+//                        break;
+//                    case 1:
+//                        switch (notifyBaseStatusEx.getMode()) {
+//                            case 1:
+//                                //Logger.e("待命模式" + modeView.getText());
+//                                tv_all_status2.setText("待命中");
+//                                break;
+//                            case 3:
+//                                tv_all_status2.setText("运动中");
+//                                switch (notifyBaseStatusEx.getSonMode()){
+//                                    case 3:
+//                                        tv_all_status2.setText("异常");
+//                                        break;
+//                                    case 15:
+//                                        tv_all_status2.setText("重定位中");
+//                                        break;
+//                                }
+//                                break;
+//                        }
+//                        break;
+//                }
+//                if(notifyBaseStatusEx.isChargingStatus()) {
+//                    iv_all_cd2.setImageResource(R.mipmap.chongd_check);
+//                }else {
+//                    iv_all_cd2.setImageResource(R.mipmap.chongd_def);
+//                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
-            switch (notifyBaseStatusEx.getStopStat()) {
-                case 4:
-                    iv_jt_def.setVisibility(View.VISIBLE);
-                    iv_jt_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.jt_nodef),null,null);
-                    iv_yk_def.setVisibility(View.GONE);
-                    iv_jt_def.setTextColor(getResources().getColor(R.color.white));
-                    iv_yk_def.setTextColor(getResources().getColor(R.color.text_gray));
-                    break;
-                case 8:
-                    iv_yk_def.setVisibility(View.VISIBLE);
-                    iv_jt_def.setVisibility(View.GONE);
-                    iv_yk_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.yk_nodef),null,null);
-                    iv_jt_def.setTextColor(getResources().getColor(R.color.text_gray));
-                    iv_yk_def.setTextColor(getResources().getColor(R.color.white));
-                    break;
-                case 12:
-                    iv_jt_def.setVisibility(View.VISIBLE);
-                    iv_yk_def.setVisibility(View.VISIBLE);
-                    iv_jt_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.jt_nodef),null,null);
-                    iv_yk_def.setCompoundDrawablesWithIntrinsicBounds(null,getResources().getDrawable(R.mipmap.yk_nodef),null,null);
-                    iv_jt_def.setTextColor(getResources().getColor(R.color.white));
-                    iv_yk_def.setTextColor(getResources().getColor(R.color.white));
-                    break;
-                case 0:
-                    iv_jt_def.setVisibility(View.GONE);
-                    iv_yk_def.setVisibility(View.GONE);
-                    iv_jt_def.setTextColor(getResources().getColor(R.color.text_gray));
-                    iv_yk_def.setTextColor(getResources().getColor(R.color.text_gray));
-                    break;
-            }
+
         }
+//        if (notifyBaseStatusExTwo != null) {
+//            try {
+//                DecimalFormat df = new DecimalFormat("0");
+//                DecimalFormat format = new DecimalFormat("0.00");
+//                if (notifyEnvInfoTwo.getBatt()!=0 && String.valueOf(notifyEnvInfoTwo.getBatt())!=null){
+//                    batteryNum2=Integer.parseInt(df.format(notifyEnvInfoTwo.getBatt()));
+//                    tv_all_num2.setText(batteryNum2+" %");
+//                }
+//                if (notifyBaseStatusExTwo.getRotbotid()!=null){
+//                    tv_all_name2.setText(notifyBaseStatusExTwo.getRotbotid());
+//                }
+//                switch (notifyBaseStatusExTwo.getStopStat()) {
+//                    case 4:
+//                        iv_all_jt2.setImageResource(R.mipmap.jt_check);
+//                        break;
+//                    case 8:
+//                        iv_all_jt2.setImageResource(R.mipmap.jt_default);
+//                        break;
+//                    case 12:
+//                        iv_all_jt2.setImageResource(R.mipmap.jt_check);
+//                        break;
+//                    case 0:
+//                        iv_all_jt2.setImageResource(R.mipmap.jt_default);
+//                        break;
+//                }
+//                switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
+//                    case 0:
+//                        tv_all_status2.setText("自标定中");
+//                        //自标定
+//                        break;
+//                    case 1:
+//                        switch (notifyBaseStatusExTwo.getMode()) {
+//                            case 1:
+//                                //Logger.e("待命模式" + modeView.getText());
+//                                tv_all_status2.setText("待命中");
+//                                break;
+//                            case 3:
+//                                tv_all_status2.setText("运动中");
+//                                switch (notifyBaseStatusExTwo.getSonMode()){
+//                                    case 3:
+//                                        tv_all_status2.setText("异常");
+//                                        break;
+//                                    case 15:
+//                                        tv_all_status2.setText("重定位中");
+//                                        break;
+//                                }
+//                                break;
+//                        }
+//                        break;
+//                }
+//                if(notifyBaseStatusExTwo.isChargingStatus()) {
+//                    iv_all_cd2.setImageResource(R.mipmap.chongd_check);
+//                }else {
+//                    iv_all_cd2.setImageResource(R.mipmap.chongd_def);
+//                }
+//            }catch (Exception e){
+//                e.printStackTrace();
+//            }
+//
+//        }
     }
 
     /**
@@ -431,6 +618,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         } else {
             toast("再按一次退出");
         }
+        tcpAiClient.disConnect();
     }
 
     /**
@@ -441,6 +629,8 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         intent_login.setClass(HomeActivity.this, LoginActivity.class);
         intent_login.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP); //关键的一句，将新的activity置为栈顶
         startActivity(intent_login);
+        tcpAiClient.disConnect();
+        tcpAiClient.onDestroy();
         finish();
 
     }
@@ -527,6 +717,73 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         });
 
     }
+
+    /**
+     * 集控弹窗
+     */
+//    private TextView tv_all_name1;
+//    private TextView tv_all_num1;
+//    private TextView tv_all_status1;
+//    private ImageView iv_all_jt1;
+//    private ImageView iv_all_cd1;
+//    private TextView tv_all_name2;
+//    private TextView tv_all_num2;
+//    private TextView tv_all_status2;
+//    private ImageView iv_all_jt2;
+//    private ImageView iv_all_cd2;
+//    private BasrTextView tv_all_start;
+//    private BasrTextView tv_all_stop;
+//    private BasrTextView tv_all_end;
+//    private TextView tv_all_quit;
+//    private TextView tv_all_reference;
+//    private ZoomImageView zoomImageView;
+//    private void showAllControlPopupWindow() {
+//        View contentView = null;
+//        contentView = LayoutInflater.from(this).inflate(R.layout.dialog_auto_retail, null);
+//        customPopuWindow = new CustomPopuWindow.PopupWindowBuilder(this)
+//                .setView(contentView)
+//                .size(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
+//                .enableOutsideTouchableDissmiss(true)// 设置点击PopupWindow之外的地方，popWindow不关闭，如果不设置这个属性或者为true，则关闭
+//                .setOutsideTouchable(false)//是否PopupWindow 以外触摸dissmiss
+//                .create()
+//                .showAsDropDown(findViewById(R.id.taskmanager), 0, -10);
+//        tv_all_name1=contentView.findViewById(R.id.tv_all_name1);
+//        tv_all_num1=contentView.findViewById(R.id.tv_all_num1);
+//        tv_all_status1=contentView.findViewById(R.id.tv_all_status);
+//        iv_all_jt1=contentView.findViewById(R.id.iv_all_jt);
+//        iv_all_cd1=contentView.findViewById(R.id.iv_all_cd);
+//        tv_all_name2=contentView.findViewById(R.id.tv_all_name2);
+//        tv_all_num2=contentView.findViewById(R.id.tv_all_num2);
+//        tv_all_status2=contentView.findViewById(R.id.tv_all_status2);
+//        iv_all_jt2=contentView.findViewById(R.id.iv_all_jt2);
+//        iv_all_cd2=contentView.findViewById(R.id.iv_all_cd2);
+//        tv_all_start=contentView.findViewById(R.id.tv_all_start);
+//        tv_all_stop=contentView.findViewById(R.id.tv_all_stop);
+//        tv_all_end=contentView.findViewById(R.id.tv_all_end);
+//        tv_all_quit=contentView.findViewById(R.id.tv_all_quit);
+//        tv_all_reference=contentView.findViewById(R.id.tv_all_reference);
+//        zoomImageView=contentView.findViewById(R.id.zoom_all);
+//        isAllChecked();
+//        tv_all_quit.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                customPopuWindow.dissmiss();
+//                try {
+//                    FloatWindow.get().show();
+//                }catch (Exception e){
+//                    e.printStackTrace();
+//                }
+//            }
+//        });
+//    }
+//    /**
+//     * 判断哪个页面是否被选中
+//     */
+//    private void isAllChecked() {
+//        tv_all_start.setType(1);
+//        tv_all_stop.setType(1);
+//        tv_all_end.setType(1);
+//    }
 
     @SuppressLint("NewApi")
     private void initSeekBar() {
@@ -718,12 +975,43 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
      * 接收AIServer广播
      */
     private void receiveAiBroadcast(){
+        Logger.e("接受AI广播");
             udpClient= UdpClient.getInstance(this,ClientMessageDispatcher.getInstance());
             try {
-                udpClient.connect(aiPort);
+                if (globalParameter.isLan()){
+                    udpClient.connect(aiPort);
+                }else {
+                    Logger.e("广域网不需要广播");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
     }
+
+    /**
+     * 发送自动售卖请求
+     */
+    private void postAutoRetail(int type){
+        DDRAIServiceCmd.eRetailEnableType enableType;
+        switch (type){
+            case 0:
+                enableType=DDRAIServiceCmd.eRetailEnableType.eEnable;
+                break;
+            case 1:
+                enableType=DDRAIServiceCmd.eRetailEnableType.eDisable;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+        DDRAIServiceCmd.reqRetailRecognizing reqRetailRecognizing=DDRAIServiceCmd.reqRetailRecognizing.newBuilder()
+                .setType(enableType)
+                .build();
+        if (globalParameter.isLan()){
+            tcpAiClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eAIServer),reqRetailRecognizing);
+        }else {
+            tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eAIServer),reqRetailRecognizing);
+        }
+    }
+
 }
 

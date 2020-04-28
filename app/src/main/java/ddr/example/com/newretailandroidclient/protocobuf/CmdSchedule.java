@@ -100,6 +100,20 @@ public class CmdSchedule {
     }
 
     /**
+     * 命令的额外头部信息，决定命令发往那个服务
+     * @return
+     */
+    public static BaseCmd.CommonHeader commonHeader(BaseCmd.eCltType eCltType,String guid){
+        BaseCmd.CommonHeader header=BaseCmd.CommonHeader.newBuilder()
+                .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
+                .setToCltType(eCltType)
+                .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
+                .setGuid(guid)
+                .build();
+        return header;
+    }
+
+    /**
      * 语音对讲
      * @return
      */

@@ -6,8 +6,8 @@
     >
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_task_check"
-        android:layout_width="160dp"
-        android:layout_height="191dp"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
         android:background="@drawable/customwindow_bg"
     />
 

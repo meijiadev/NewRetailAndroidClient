@@ -12,6 +12,7 @@ import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyEnvInfo
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyHardStateProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyLidarPtsProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyMapGenStatProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyRecognizingStatus;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.NotifyRelocaStatusProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspAllSellsRecordProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspClientGetMapInfoProcessor;
@@ -38,6 +39,7 @@ import ddr.example.com.newretailandroidclient.protocobuf.processor.RspMapOperati
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspObstacleInfoProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRemoteLoginProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRemoteServerListProcessor;
+import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRetailRecognizingProcess;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRunControlExProcessor;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspRunSpecificPoint;
 import ddr.example.com.newretailandroidclient.protocobuf.processor.RspSelectLSProcessor;
@@ -160,5 +162,11 @@ public class ClientMessageDispatcher extends BaseMessageDispatcher {
 
         DDRAIServiceCmd.rspGetMapRecords rspGetMapRecords=DDRAIServiceCmd.rspGetMapRecords.newBuilder().build();
         m_ProcessorMap.put(rspGetMapRecords.getClass().toString(),new RspGetMapRecordsProcessor());
+
+        DDRAIServiceCmd.rspRetailRecognizing rspRetailRecognizing=DDRAIServiceCmd.rspRetailRecognizing.newBuilder().build();
+        m_ProcessorMap.put(rspRetailRecognizing.getClass().toString(),new RspRetailRecognizingProcess());
+
+        DDRAIServiceCmd.notifyRecognizingStatus notifyRecognizingStatus=DDRAIServiceCmd.notifyRecognizingStatus.newBuilder().build();
+        m_ProcessorMap.put(notifyRecognizingStatus.getClass().toString(),new NotifyRecognizingStatus());
     }
 }

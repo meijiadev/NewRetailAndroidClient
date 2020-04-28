@@ -118,7 +118,7 @@ public class TcpAiClient extends BaseSocketConnection {
         @Override
         public void onSocketConnectionSuccess(ConnectionInfo info, String action) {
             setConnected(true);
-            Logger.e("--------连接成功");
+            Logger.e("--------连接AI成功");
             EventBus.getDefault().post(new MessageEvent(MessageEvent.Type.tcpAiConnected));
             sendHeartBeat();
             if (waitDialog!=null){

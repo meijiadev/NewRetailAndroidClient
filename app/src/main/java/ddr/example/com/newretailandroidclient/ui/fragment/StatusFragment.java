@@ -1,6 +1,8 @@
 package ddr.example.com.newretailandroidclient.ui.fragment;
 
 import android.annotation.SuppressLint;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.drawable.AnimationDrawable;
 import android.view.View;
@@ -32,8 +34,10 @@ import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.info.MapFileStatus;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
+import ddr.example.com.newretailandroidclient.entity.info.MapInfo;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyBaseStatusEx;
 import ddr.example.com.newretailandroidclient.entity.info.NotifyEnvInfo;
 import ddr.example.com.newretailandroidclient.entity.point.TargetPoint;
@@ -147,11 +151,13 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
     private MapFileStatus mapFileStatus;
     private StringAdapter taskCheckAdapter;
     private CustomPopuWindow customPopWindow;
+    private List<MapInfo> mapInfoList=new ArrayList<>();
     //private StringAdapter robotIdAdapter;
     private RecyclerView  recycler_task_check;
     private int modeType;
     public String sPoint;
     private boolean isRunabPoint;               //是否在跑ab点
+    private GlobalParameter globalParameter;
 
     @Subscribe(threadMode = ThreadMode.MAIN,sticky = true)
     public void update(MessageEvent messageEvent){
@@ -193,7 +199,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 toast("无任务，原地待命");
                 break;
             case getSpecificPoint11:
-                Logger.e("AB点"+sPoint);
+//                Logger.e("AB点"+sPoint);
                 toast("开始前往"+sPoint);
             case switchMapSucceed:
                 for (int i = 0; i < targetPoints.size(); i++) {
@@ -205,9 +211,20 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 break;
             case updateDDRVLNMap:
                 Logger.e("------地图名："+mapFileStatus.getMapName()+"当前"+mapName);
+                mapInfoList=mapFileStatus.getMapInfos();
                 if (mapFileStatus.getMapName().equals(mapName)){
+                    for (int i=0;i<mapInfoList.size();i++){
+                        if (mapInfoList.get(i).getMapName().equals(mapName)){
+                            byte[]bytes=mapInfoList.get(i).getBytes();
+                            if (bytes!=null){
+                                mapImageView.setBitamp(getBitmapFromByte(bytes));
+                            }else {
+                                mapImageView.setMapBitmap(mapName);
+                            }
+                            }
+                        }
+                    }
                     Logger.e("group列数"+groupList.size()+"列数1"+mapFileStatus.getTaskModes().size()+" -- "+mapFileStatus.getcTaskModes().size());
-                    mapImageView.setMapBitmap(mapName);
                     tvTiMap.setVisibility(View.GONE);
                     tvCreateMap.setVisibility(View.GONE);
                     groupList = new ArrayList<>();
@@ -218,8 +235,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                     taskCheckAdapter.setNewData(groupList);
                     targetPoints=mapFileStatus.getcTargetPoints();
                     targetPointAdapter.setNewData(targetPoints);
-                    mapImageView.setABPointLine(isRunabPoint);
-                }
+                     mapImageView.setABPointLine(isRunabPoint);
                 break;
         }
     }
@@ -678,6 +694,15 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
         }
 
     }
+
+    public Bitmap getBitmapFromByte(byte[] temp){
+        if(temp != null){
+            Bitmap bitmap = BitmapFactory.decodeByteArray(temp, 0, temp.length);
+            return bitmap;
+        }else{
+            return null;
+        }
+    }
     @Override
     public void onLeftClick() {
         switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
@@ -817,26 +842,32 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
     @Override
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
-        if (isVisibleToUser){
-            // 相当于onResume()方法--获取焦点
-            Logger.e("可见");
-            if (mapImageView1!=null){
-                if (!mapImageView1.drawThread.isAlive()){
-                    mapImageView.invalidate();
-                    mapImageView1.startThread();
-                    mapImageView.setMapBitmap(notifyBaseStatusEx.getCurroute());
+        globalParameter=GlobalParameter.getInstance();
+        if (globalParameter.isLan()){
+            if (isVisibleToUser){
+                // 相当于onResume()方法--获取焦点
+                Logger.e("可见");
+                if (mapImageView1!=null){
+                    if (!mapImageView1.drawThread.isAlive()){
+                        mapImageView.invalidate();
+                        mapImageView1.startThread();
+                        mapImageView.setMapBitmap(notifyBaseStatusEx.getCurroute());
+                    }
                 }
+            }else {
+                // 相当于onpause()方法---失去焦点
+                Logger.e("不可见");
+                if (mapImageView1!=null){
+                    if (mapImageView1.drawThread.isAlive()){
+                        mapImageView1.onStop();
+                    }
+                }
+
             }
         }else {
-            // 相当于onpause()方法---失去焦点
-            Logger.e("不可见");
-            if (mapImageView1!=null){
-                if (mapImageView1.drawThread.isAlive()){
-                    mapImageView1.onStop();
-                }
-            }
-
+            Logger.e("广域网不预先加载");
         }
+
     }
 
     @Override

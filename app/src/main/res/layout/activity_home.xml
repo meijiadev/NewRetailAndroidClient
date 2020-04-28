@@ -73,6 +73,17 @@
             />
         <TextView
             android:layout_width="wrap_content"
+            android:layout_height="28dp"
+            android:text="自动售卖"
+            android:layout_toRightOf="@id/sell_data"
+            android:layout_marginLeft="34dp"
+            android:layout_marginTop="16dp"
+            android:textColor="#ffffff"
+            android:gravity="center"
+            android:background="@drawable/bg_task_cz"
+            android:id="@+id/tv_auto_retail"/>
+        <TextView
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:drawableTop="@mipmap/yk_default"
             android:text="遥控"
@@ -109,9 +120,25 @@
             android:layout_height="31dp"
             android:background="#262728"
             android:layout_centerVertical="true"
-            android:layout_toLeftOf="@id/tv_change"
+            android:layout_toLeftOf="@id/tv_allControl"
             android:layout_marginRight="18dp"
             ></View>
+        <TextView
+            android:id="@+id/tv_allControl"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="集控"
+            android:gravity="center_horizontal"
+            android:textSize="11dp"
+            android:textColor="@color/white"
+            android:layout_toLeftOf="@id/tv_change"
+            android:layout_marginRight="18dp"
+            android:layout_centerVertical="true"
+            android:drawableTop="@mipmap/yk_default"
+            android:layout_marginTop="5.5dp"
+            android:drawablePadding="5dp"
+            android:visibility="gone"
+            />
         <TextView
             android:id="@+id/tv_change"
             android:layout_width="wrap_content"

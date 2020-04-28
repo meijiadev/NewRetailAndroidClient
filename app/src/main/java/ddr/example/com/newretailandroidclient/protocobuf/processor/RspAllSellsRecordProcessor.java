@@ -35,12 +35,12 @@ public class RspAllSellsRecordProcessor extends BaseProcessor{
             retailRecord=new RetailRecord();
             retailRecord.setId(""+((postion*8)+postion+i+1));
             retailRecord.setName(sellRecordList.get(i).getProductname().toStringUtf8());
-            retailRecord.setSettlement(String.valueOf(sellRecordList.get(i).getPaytype()));
+            retailRecord.setSettlement(sellRecordList.get(i).getPaytype());
             retailRecord.setB_num(sellRecordList.get(i).getOrdercode().toStringUtf8());
             retailRecord.setPrice(String.valueOf(sellRecordList.get(i).getUnitprice()));
             retailRecord.setNumber(String.valueOf(sellRecordList.get(i).getSellnum()));
             retailRecord.setTotal(String.valueOf(sellRecordList.get(i).getTotalprice()));
-            retailRecord.setCount_num(rspAllSellsRecord.getTotalnums());
+//            retailRecord.setCount_num(rspAllSellsRecord.getTotalnums());
             retailRecordList.add(retailRecord);
         }
         retailRecordS.setRetailRecordList(retailRecordList);
@@ -49,7 +49,7 @@ public class RspAllSellsRecordProcessor extends BaseProcessor{
         SimpleDateFormat   formatter   =   new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
         Date date=new Date(System.currentTimeMillis());//系统小时数
         String ss=formatter.format(date);//获取当前时间
-        Logger.e("接受时间"+ ss);
+//        Logger.e("接受时间"+ ss);
         EventBus.getDefault().post(new MessageEvent(MessageEvent.Type.updataSellsRecord));
 
     }

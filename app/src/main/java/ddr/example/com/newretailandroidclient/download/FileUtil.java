@@ -11,6 +11,7 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.other.Logger;
 
 
@@ -22,8 +23,15 @@ public class FileUtil {
     private String sdPath;
     public  int MaxLength=1024*2;
 
-    public FileUtil(String path){
-        sdPath=Environment.getExternalStorageDirectory().getPath()+"/"+"机器人"+"/"+path+"/";
+    public FileUtil(String path,int type){
+        switch (type){
+            case 0:
+                sdPath= GlobalParameter.ROBOT_FOLDER+path+"/";
+                break;
+            case 1:
+                sdPath=Environment.getExternalStorageDirectory().getPath()+"/"+"机器人图片"+"/"+path+"/";
+                break;
+        }
         createSdDir(sdPath);
     }
 

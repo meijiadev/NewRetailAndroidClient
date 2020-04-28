@@ -54,6 +54,8 @@
         android:gravity="center"
         android:layout_centerVertical="true"
         android:layout_toRightOf="@id/tv_map_run_time"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:id="@+id/tv_map_retail"
         />
     <TextView

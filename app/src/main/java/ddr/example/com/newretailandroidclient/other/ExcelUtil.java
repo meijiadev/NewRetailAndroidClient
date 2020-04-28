@@ -143,7 +143,7 @@ public class ExcelUtil {
                             RetailRecord retailRecord= (RetailRecord) objList.get(j);
                             list.add(retailRecord.getId());
                             list.add(retailRecord.getName());
-                            list.add(retailRecord.getSettlement());
+                            list.add(String.valueOf(retailRecord.getSettlement()));
                             list.add(retailRecord.getB_num());
                             list.add(retailRecord.getPrice());
                             list.add(String.valueOf(retailRecord.getNumber()));
@@ -153,7 +153,7 @@ public class ExcelUtil {
                             ErrorRecord errorRecord= (ErrorRecord) objList.get(j);
                             list.add(errorRecord.getId());
                             list.add(errorRecord.getTime());
-                            list.add(errorRecord.getError_type());
+//                            list.add(errorRecord.getError_type());
                             break;
                         case 2://充电记录
                             ChongRecord chongRecord= (ChongRecord) objList.get(j);

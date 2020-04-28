@@ -24,7 +24,7 @@
             />
         <RelativeLayout
             android:layout_width="50dp"
-            android:layout_height="68dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/tv_retail_count"
             android:layout_marginTop="18dp"
             android:layout_marginLeft="18dp"
@@ -47,7 +47,8 @@
                 android:gravity="center"
                 android:layout_below="@id/tv_retail_record"
                 android:layout_marginTop="18dp"
-                android:id="@+id/tv_back_record"/>
+                android:id="@+id/tv_back_record"
+                android:visibility="gone"/>
         </RelativeLayout>
 
         </RelativeLayout>

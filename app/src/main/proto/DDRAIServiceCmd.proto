@@ -8,6 +8,24 @@ enum eRspType {
 	eDenied = 3;
 }
 
+enum eRetailEnableType
+{
+	eEnable = 0;
+	eDisable = 1;
+}
+message notifyRecognizingStatus
+{
+    eRetailEnableType type = 1;
+}
+message reqRetailRecognizing
+{
+	eRetailEnableType type = 1;
+}
+
+message rspRetailRecognizing
+{
+    eRspType ret = 1;
+}
 message reqAllSellsRecord
 {
     int32 startnum = 1;
@@ -280,4 +298,29 @@ message notifyGoodsInfoSet
 		int32 stockNums = 3;
 	}
 	repeated GoodsInfo goodinfo = 1;
+}
+
+message reqGrammarStart
+{
+	string param = 1;
+}
+message rspGrammarStart
+{
+	string ret = 1;
+}
+message reqGrammarEnd
+{
+	string param = 1;
+}
+message rspGrammarEnd
+{
+	string ret = 1;
+}
+message notifyGrammarResult
+{
+	bytes content = 1;
+}
+message reqGrammarStream
+{
+	bytes buf = 1;
 }

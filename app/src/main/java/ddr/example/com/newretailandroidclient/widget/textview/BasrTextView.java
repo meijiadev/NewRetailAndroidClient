@@ -16,8 +16,8 @@ import ddr.example.com.newretailandroidclient.R;
 
 
 /**
- * time: 2019/10/31
- * desc: 能改变状态字体颜色并带下划线的TextView
+ * time: 2020/03/31
+ * desc: 能改变状态字体颜色的TextView
  */
 @SuppressLint("AppCompatCustomView")
 public class BasrTextView extends TextView {

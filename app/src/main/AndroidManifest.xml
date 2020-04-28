@@ -57,6 +57,9 @@
             android:screenOrientation="landscape"/>
         <activity android:name="ddr.example.com.newretailandroidclient.ui.activity.DeviceSelectActivity"
             android:screenOrientation="landscape"/>
+        <activity android:name="ddr.example.com.newretailandroidclient.ui.activity.AllRetailActivity"
+            android:screenOrientation="landscape"/>
+
     </application>
 
 </manifest>

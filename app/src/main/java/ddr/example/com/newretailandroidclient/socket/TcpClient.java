@@ -95,6 +95,7 @@ public class TcpClient extends BaseSocketConnection {
         socketCallBack=new SocketCallBack();
         manager.registerReceiver(socketCallBack);
         manager.connect();
+        Logger.e("创建TCP---- 成功");
     }
 
 
@@ -304,20 +305,6 @@ public class TcpClient extends BaseSocketConnection {
         }
     }
 
-    /**
-     * 设置发送消息的去向
-     * @param eCltType
-     * @return
-     */
-
-    private static BaseCmd.CommonHeader commonHeader(BaseCmd.eCltType eCltType){
-        BaseCmd.CommonHeader commonHeader=BaseCmd.CommonHeader.newBuilder()
-                .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(eCltType)
-                .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
-                .build();
-        return commonHeader;
-    }
 
 
     /**
@@ -362,12 +349,7 @@ public class TcpClient extends BaseSocketConnection {
         DDRVLNMap.reqGetDDRVLNMapEx reqGetDDRVLNMapEx=DDRVLNMap.reqGetDDRVLNMapEx.newBuilder()
                 .setOnerouteName(routeName)
                 .build();
-        BaseCmd.CommonHeader commonHeader = BaseCmd.CommonHeader.newBuilder()
-                .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eLSMSlamNavigation)
-                .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
-                .build();
-        tcpClient.sendData(commonHeader,reqGetDDRVLNMapEx);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqGetDDRVLNMapEx);
         Logger.e("请求地图信息");
     }
 
@@ -385,7 +367,16 @@ public class TcpClient extends BaseSocketConnection {
         tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqClientGetMapInfo);
         Logger.e("请求文件中....");
     }
-
+    /**
+     * 请求文件（txt、png) 刷新文件列表
+     */
+    public void requestFile(String guid) {
+        //final ByteString currentFile = ByteString.copyFromUtf8("OneRoute_*" + "/bkPic.png");
+        BaseCmd.reqClientGetMapInfo reqClientGetMapInfo=BaseCmd.reqClientGetMapInfo.newBuilder()
+                .build();
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer,guid),reqClientGetMapInfo);
+        Logger.e("请求文件中....");
+    }
 
     /**
      * 发送线速度，角速度

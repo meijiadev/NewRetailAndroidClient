@@ -55,6 +55,7 @@
             android:gravity="center"
             android:layout_alignTop="@id/tv_sensorSet"
             android:id="@+id/tv_robotTest"
+            android:visibility="gone"
             />
         <ddr.example.com.newretailandroidclient.widget.textview.LineTextView
             android:layout_width="match_parent"

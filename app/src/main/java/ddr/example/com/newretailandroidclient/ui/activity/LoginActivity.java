@@ -59,7 +59,7 @@ public  class LoginActivity extends DDRActivity {
 
     public  int tcpPort = 0;
     private String accountName = "", passwordName = "";
-    private String retailName="retail_2",retailPassword="retail_2";
+    private String retailName="admin",retailPassword="admin";
     private SharedPreferences sharedPreferences;
     private SharedPreferences.Editor editor;
 
@@ -69,7 +69,7 @@ public  class LoginActivity extends DDRActivity {
     public UdpClient udpClient;
     public UdpAiClient udpClient1;
     private BaseDialog waitDialog;
-    private static final String LAN_IP="192.168.0.95";    //局域网IP
+    private static final String LAN_IP="192.168.1.220";    //局域网IP
     private int port=28888;
     private int aiPort=18888;
     private boolean hasReceiveBroadcast=false;            //是否接收到广播
@@ -88,13 +88,10 @@ public  class LoginActivity extends DDRActivity {
                 udpIp= (UdpIp) messageEvent.getData();
                 Logger.e("ip"+udpIp.getIp()+"端口"+udpIp.getPort());
                 break;
-//            case updateAiPort:
-//                udpIp1= (UdpIp) messageEvent.getData();
-//                Logger.e("ip"+udpIp1.getIp()+"端口"+udpIp1.getPort());
-//                break;
             case LoginSuccess:
                 UdpClient.getInstance(context,ClientMessageDispatcher.getInstance()).close();
                 editor.putString("password", passwordName);
+                editor.putString("accountName",accountName);
                 editor.commit();
                 Logger.e("登录成功");
                 postDelayed(()->{
@@ -102,21 +99,26 @@ public  class LoginActivity extends DDRActivity {
                         waitDialog.dismiss();
                     }
                     startActivity(HomeActivity.class);
-//                    receiveAiBroadcast();
-//                    Logger.e("AIip"+udpIp1.getIp()+"AI端口"+udpIp1.getPort());
-//                    tcpAiClient.createConnect(udpIp1.getIp(),udpIp1.getPort());
                 },1000);
                 break;
             case wanLoginSuccess:
                 UdpClient.getInstance(context,ClientMessageDispatcher.getInstance()).close();
                 editor.putString("password", passwordName);
+                editor.putString("accountName",accountName);
                 editor.commit();
                 Logger.e("广域网登录成功");
                 postDelayed(()->{
                     if (waitDialog!=null&&waitDialog.isShowing()){
                         waitDialog.dismiss();
                     }
-                    startActivity(DeviceSelectActivity.class);
+                    if (passwordName.equals("admin")){
+//                        tcpClient.requestFile();
+                        startActivity(AllRetailActivity.class);
+                        globalParameter.setPassword(passwordName);
+                    }else {
+                        startActivity(DeviceSelectActivity.class);
+                        globalParameter.setPassword(passwordName);
+                    }
                 },1000);
                 break;
             case tcpConnected:
@@ -126,7 +128,7 @@ public  class LoginActivity extends DDRActivity {
                     globalParameter.setLan(true);
                 }else {
                     Logger.e("-----广域网连接成功，开始登录");
-                    tcpClient.sendData(null,CmdSchedule.remoteLogin(retailName,retailPassword));
+                    tcpClient.sendData(null,CmdSchedule.remoteLogin(accountName,passwordName));
                     globalParameter.setLan(false);
                 }
                 break;
@@ -152,10 +154,9 @@ public  class LoginActivity extends DDRActivity {
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();
         password.setText(sharedPreferences.getString("password", ""));
+        account.setText(sharedPreferences.getString("accountName",accountName));
         tcpClient=TcpClient.getInstance(context,ClientMessageDispatcher.getInstance());
         globalParameter=GlobalParameter.getInstance();
-//        tcpAiClient=TcpAiClient.getInstance(context,ClientMessageDispatcher.getInstance());
-
     }
 
     @OnClick({R.id.login_in,R.id.tv_lan,R.id.tv_wan})
@@ -171,7 +172,13 @@ public  class LoginActivity extends DDRActivity {
                     if (isLan){                                   //局域网登录
                         if (hasReceiveBroadcast){
                             Logger.e("ip"+udpIp.getIp()+"端口"+udpIp.getPort());
-                            tcpClient.createConnect(udpIp.getIp(),udpIp.getPort());
+                            if (udpIp.getIp()!=null && udpIp.getPort()!=0){
+                                if (tcpClient.isConnected()){
+                                    tcpClient.disConnect();
+                                }
+                                tcpClient.createConnect(udpIp.getIp(),udpIp.getPort());
+//                                tcpClient.createConnect(LAN_IP,88);
+                            }
                             waitDialog=new WaitDialog.Builder(this)
                                     .setMessage("登录中...")
                                     .show();
@@ -185,8 +192,9 @@ public  class LoginActivity extends DDRActivity {
                             toast("无法连接，请检查机器人服务是否正常开启！");
                         }
                     }else {                                     //广域网登录
-                        if (tcpClient.isConnected())
+                        if (tcpClient.isConnected()){
                             tcpClient.disConnect();
+                        }
                         tcpClient.createConnect(CmdSchedule.broadcastServerIP,CmdSchedule.broadcastServerPort);      //连接地方服务器
                         waitDialog=new WaitDialog.Builder(this)
                                     .setMessage("登录中...")

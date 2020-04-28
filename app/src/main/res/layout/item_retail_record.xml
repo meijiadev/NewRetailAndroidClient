@@ -21,6 +21,8 @@
             android:gravity="center"
             android:layout_toRightOf="@id/tv_id_item"
             android:layout_marginLeft="18dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_centerVertical="true"
             android:id="@+id/tv_commodity_name_item"
             />
@@ -32,6 +34,8 @@
             android:gravity="center"
             android:layout_toRightOf="@id/tv_commodity_name_item"
             android:layout_marginLeft="18dp"
+            android:ellipsize="end"
+            android:maxLines="1"
             android:layout_centerVertical="true"
             android:id="@+id/tv_Settlement_item"
             />

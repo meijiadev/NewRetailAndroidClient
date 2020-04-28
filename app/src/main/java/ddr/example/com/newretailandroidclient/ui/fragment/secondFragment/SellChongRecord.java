@@ -26,6 +26,7 @@ import DDRCommProto.BaseCmd;
 import butterknife.BindView;
 import butterknife.OnClick;
 import ddr.example.com.newretailandroidclient.R;
+import ddr.example.com.newretailandroidclient.base.BaseDialog;
 import ddr.example.com.newretailandroidclient.common.DDRLazyFragment;
 import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
@@ -40,6 +41,7 @@ import ddr.example.com.newretailandroidclient.socket.TcpAiClient;
 import ddr.example.com.newretailandroidclient.socket.TcpClient;
 import ddr.example.com.newretailandroidclient.ui.adapter.ChongRecordAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.PageAdapter;
+import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
 
 public class SellChongRecord extends DDRLazyFragment {
     @BindView(R.id.recycle_sell_chong)
@@ -151,8 +153,20 @@ public class SellChongRecord extends DDRLazyFragment {
                 }
                 break;
             case R.id.tv_d_c_excel:
-                isExcel=true;
-                postSellChong(0,100);
+                new InputDialog.Builder(getActivity())
+                        .setTitle("是否输出日志到本地")
+                        .setEditVisibility(View.GONE)
+                        .setListener(new InputDialog.OnListener() {
+                            @Override
+                            public void onConfirm(BaseDialog dialog, String content) {
+                                isExcel=true;
+                                postSellChong(0,100);
+                            }
+                            @Override
+                            public void onCancel(BaseDialog dialog) {
+                                toast("取消");
+                            }
+                        }).show();
                 break;
         }
     }
@@ -279,14 +293,14 @@ public class SellChongRecord extends DDRLazyFragment {
 
         toast("Excel已导出至"+filePath);
 
-        filePath = "/sdcard/AndroidExcelDemo";
+        filePath = "/sdcard/新零售机器列表";
     }
 
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        postSellChong(0,9);
+        postSellChong((nowPagepostion*8+nowPagepostion),9);
         Logger.e("刷新数据");
     }
 

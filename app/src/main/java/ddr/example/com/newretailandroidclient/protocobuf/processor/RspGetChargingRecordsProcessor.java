@@ -6,6 +6,7 @@ import com.google.protobuf.GeneratedMessageLite;
 
 import org.greenrobot.eventbus.EventBus;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,5 +55,22 @@ public class RspGetChargingRecordsProcessor extends BaseProcessor{
         Logger.e("接受后数据"+chongRecordList.size());
         chongRecordS.setCountNum(rspGetChargingRecords.getTotalnums());
         EventBus.getDefault().post(new MessageEvent(MessageEvent.Type.updataSellChongRecord));
+    }
+    /**
+     * GMT(格林威治标准时间)转换当前北京时间
+     * 比如：1526217409 -->2018/5/13 21:16:49 与北京时间相差8个小时，调用下面的方法，是在1526217409加上8*3600秒
+     * @param  lt
+     * @return
+     */
+    public static String stampToDate(Long lt) {
+        String res = null;
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            res = simpleDateFormat.format(lt*1000);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+//        Logger.e("时间"+res);
+        return res;
     }
 }

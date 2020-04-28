@@ -12,6 +12,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.chad.library.adapter.base.BaseViewHolder;
 
 import java.io.FileInputStream;
@@ -25,6 +27,7 @@ import java.util.List;
 
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.base.BaseAdapter;
+import ddr.example.com.newretailandroidclient.common.GlobalParameter;
 import ddr.example.com.newretailandroidclient.entity.other.HuoRecord;
 import ddr.example.com.newretailandroidclient.entity.other.HuoRecordS;
 import ddr.example.com.newretailandroidclient.other.Logger;
@@ -35,8 +38,7 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     private TextView tv_huo_name;
     private OnItemClickListener mOnItemClickListener;
     private Handler handler;
-    private HuoRecordS huoRecordS;
-    private List<HuoRecord> huoRecordList;
+    private GlobalParameter globalParameter=GlobalParameter.getInstance();
 
     public HuoRecordAdapter(int layoutResId) {
         super(layoutResId);
@@ -64,30 +66,47 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     @Override
     protected void convert(@NonNull BaseViewHolder helper, HuoRecord item) {
         super.convert(helper, item);
-        huoRecordS=HuoRecordS.getInstance();
-        huoRecordList=huoRecordS.getHuoRecordList();
-        transformHuoInfo(huoRecordList);
+
         tv_huo_num=helper.getView(R.id.tv_huo_num);
         iv_huo_image=helper.getView(R.id.iv_huo_image);
         tv_huo_name=helper.getView(R.id.tv_huo_name);
         helper.setText(R.id.tv_huo_num,item.getHuoNum())
-                .setText(R.id.tv_huo_name,item.getHuoName());
+                .setText(R.id.tv_huo_name,cutName(item.getHuoName()));
+        if (globalParameter.isLan()){
+            try {
+                String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人图片" + "/" +"SellImage"+"/"+ item.getHuoID() + ".png";
+                Glide.with(mContext).load(pngPath).skipMemoryCache(false).diskCacheStrategy(DiskCacheStrategy.NONE).into((ImageView) helper.getView(R.id.iv_huo_image));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }else {
+            try {
+                String files=item.getHuoWurl().split("//")[1];
+                String fileDir= files.split("/")[2];        //文件夹名
+                String fileName=files.split("/")[4];        //文件名
+                String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人图片" + "/" +fileDir+"/"+ fileName;
+                Logger.e("对比地址"+pngPath+"----"+fileDir+"-----"+fileName);
+                Glide.with(mContext).load(pngPath).skipMemoryCache(false).diskCacheStrategy(DiskCacheStrategy.NONE).into((ImageView) helper.getView(R.id.iv_huo_image));
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+        }
 
-        new Thread(new Runnable(){
-            @Override
-            public void run() {
-                Logger.e("图片地址A---"+item.getHuoUrl()+item.getHuoNum());
-                getHttpBitmap(item.getHuoUrl());
-            }
-        }).start();
-        handler=new Handler(){
-            @Override
-            public void handleMessage(Message msg) {
-                super.handleMessage(msg);
-                Bitmap bitmap= (Bitmap) msg.obj;
-                helper.setImageBitmap(R.id.iv_huo_image,bitmap);
-            }
-        };
+//        new Thread(new Runnable(){
+//            @Override
+//            public void run() {
+//                Logger.e("图片地址A---"+item.getHuoUrl()+item.getHuoNum());
+//                getHttpBitmap(item.getHuoUrl());
+//            }
+//        }).start();
+//        handler=new Handler(){
+//            @Override
+//            public void handleMessage(Message msg) {
+//                super.handleMessage(msg);
+//                Bitmap bitmap= (Bitmap) msg.obj;
+//                helper.setImageBitmap(R.id.iv_huo_image,bitmap);
+//            }
+//        };
 
     }
     public interface OnItemClickListener{ 
@@ -119,9 +138,12 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
     /**
      * 加载本地图片
      */
-    public static Bitmap getLoacalBitmap(String url) {
+    public static Bitmap getLoacalBitmap(String id) {
         try {
-            FileInputStream fis = new FileInputStream(url);
+            String dirName =id;
+            String pngPath = GlobalParameter.ROBOT_FOLDER +"SellImage"+"/"+ dirName + ".png";
+            Logger.e("对比的图片地址"+pngPath);
+            FileInputStream fis = new FileInputStream(pngPath);
             return BitmapFactory.decodeStream(fis);
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -159,30 +181,20 @@ public class HuoRecordAdapter extends BaseAdapter<HuoRecord>{
             e.printStackTrace();
         }
     }
-
     /**
-     * 设置图片的路径
-     *
-     * @param
+     * 裁剪中英法名称
+     * @param value
+     * @return
      */
-    private Bitmap lookBitmap;
-    public void transformHuoInfo(List<HuoRecord> huoRecords) {
-        for (int i = 0; i < huoRecords.size(); i++) {
-            String dirName = huoRecords.get(i).getHuoID();
-            String pngPath = Environment.getExternalStorageDirectory().getPath() + "/" + "机器人" + "/" +"SellImage"+"/"+ dirName + ".png";
-            if (pngPath!=null){
-                Logger.e("查找到的图片"+pngPath);
-                FileInputStream fis = null;
-                try {
-                    fis = new FileInputStream(pngPath);
-                    lookBitmap = BitmapFactory.decodeStream(fis);
-                    Logger.e("图片地址"+lookBitmap);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                } catch (NullPointerException e) {
-                    e.printStackTrace();
-                }
-            }
+    private String cutName(String value){
+        Logger.e("裁剪"+value);
+        String v=null;
+        if (value.length()>0 && value.contains("&")){
+            v=value.substring(0,value.indexOf("&"));
+        }else {
+            v=value;
         }
+        return v;
     }
+
 }

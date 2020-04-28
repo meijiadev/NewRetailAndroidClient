@@ -1,6 +1,17 @@
 package ddr.example.com.newretailandroidclient.entity.other;
 
 public class HuoProduct {
+    public static  HuoProduct huoProduct;
+    public static HuoProduct getInstance(){
+        if (huoProduct==null){
+            synchronized (HuoRecord.class){
+                if (huoProduct==null){
+                    huoProduct=new HuoProduct();
+                }
+            }
+        }
+        return huoProduct;
+    }
     private String id;
     private String name;
     private String imageLan;
