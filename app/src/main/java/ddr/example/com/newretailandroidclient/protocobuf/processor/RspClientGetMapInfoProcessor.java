@@ -31,14 +31,12 @@ import ddr.example.com.newretailandroidclient.other.Logger;
  * 接收地图信息
  */
 public class RspClientGetMapInfoProcessor extends BaseProcessor implements DownLoadCallBack {
-    List<BaseCmd.rspClientGetMapInfo.MapInfoItem> mapInfoItemList;
-    List<MapInfo> mapInfoList=new ArrayList<>();
-    FileUtil fileUtil;
+
+    private GlobalParameter globalParameter;
     private List<String> urlList;
     private List<String> mapNames;
     private List<byte[]> bitmapBytes;
-
-    private GlobalParameter globalParameter;
+    FileUtil fileUtil;
 
     @Override
     public void process(Context context, BaseCmd.CommonHeader commonHeader, GeneratedMessageLite msg) {
@@ -46,7 +44,10 @@ public class RspClientGetMapInfoProcessor extends BaseProcessor implements DownL
         Logger.e("接收到文件http地址");
         globalParameter=GlobalParameter.getInstance();
         BaseCmd.rspClientGetMapInfo rspClientGetMapInfo= (BaseCmd.rspClientGetMapInfo) msg;
-        if (!globalParameter.isLan() && globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID3)){
+        if (globalParameter.isLan()){
+            List<BaseCmd.rspClientGetMapInfo.MapInfoItem> mapInfoItemList;
+            List<MapInfo> mapInfoList=new ArrayList<>();
+            Logger.e("局域网地图数据"+commonHeader.getGuid());
             mapInfoItemList=rspClientGetMapInfo.getMapDataList();
             urlList=new ArrayList<>();
             mapNames=new ArrayList<>();
@@ -106,10 +107,11 @@ public class RspClientGetMapInfoProcessor extends BaseProcessor implements DownL
                 mapFileStatus.setMapInfos(mapInfoList);
                 mapFileStatus.setBitmapBytes(bitmapBytes);
             }
-        }else if (!globalParameter.isLan() && globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID1)){
-            Logger.e("不加载机器人一地图");
-        } else if (!globalParameter.getPassword().equals("admin")){
-            Logger.e("局域网以及广域网单台机器-----"+commonHeader.getGuid());
+        }else{
+            if (!globalParameter.isLan() && globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID1)){
+                List<BaseCmd.rspClientGetMapInfo.MapInfoItem> mapInfoItemList;
+                List<MapInfo> mapInfoList=new ArrayList<>();
+                Logger.e("广域网两台机器机器一地图数据"+commonHeader.getGuid());
                 mapInfoItemList=rspClientGetMapInfo.getMapDataList();
                 urlList=new ArrayList<>();
                 mapNames=new ArrayList<>();
@@ -169,6 +171,72 @@ public class RspClientGetMapInfoProcessor extends BaseProcessor implements DownL
                     mapFileStatus.setMapInfos(mapInfoList);
                     mapFileStatus.setBitmapBytes(bitmapBytes);
                 }
+            }else if (!globalParameter.isLan() && globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID2)){
+                Logger.e("广域网两台机器不加载机器人二地图"+commonHeader.getGuid());
+            } else if (!globalParameter.getPassword().equals("admin") && !globalParameter.getPassword().equals("null")){
+                Logger.e("广域网单台机器-----"+commonHeader.getGuid());
+                List<BaseCmd.rspClientGetMapInfo.MapInfoItem> mapInfoItemList;
+                List<MapInfo> mapInfoList=new ArrayList<>();
+                mapInfoItemList=rspClientGetMapInfo.getMapDataList();
+                urlList=new ArrayList<>();
+                mapNames=new ArrayList<>();
+                bitmapBytes=new ArrayList<>();
+                if (mapInfoItemList!=null&&mapInfoItemList.size()>0){
+                    mapInfoList=new ArrayList<>();
+                    for (int i=0;i<mapInfoItemList.size();i++){
+                        MapInfo mapInfo=new MapInfo();
+                        mapInfo.setMapName(mapInfoItemList.get(i).getName().toStringUtf8());
+                        mapInfo.setWidth((int)mapInfoItemList.get(i).getWidth());
+                        mapInfo.setHeight((int)mapInfoItemList.get(i).getHitght());
+                        mapInfo.setAuthor(mapInfoItemList.get(i).getAuthor().toStringUtf8());
+                        mapInfo.setTime(longToDate(mapInfoItemList.get(i).getTimeStamp()));
+                        mapInfo.setTaskItemList(mapInfoItemList.get(i).getTaskSetList());
+                        ByteString bytes=mapInfoItemList.get(i).getBkPicAddr();
+                        String url=bytes.toStringUtf8();
+                        byte [] bitmaps=null;
+                        if (url.contains("http:")){
+                            Logger.e("-----url:"+url);
+                            urlList.add(url);
+                            String files=url.split("//")[1];
+                            String fileDir= files.split("/")[1];        //文件夹名
+                            String fileName=files.split("/")[2];        //文件名
+                            fileUtil=new FileUtil(fileDir,0);
+                            File target = null;
+                            if (url.contains(".png")||url.contains(".jpg")){
+                                Logger.e("----使用图片专用下载工具-----");
+                                try {
+                                    target=fileUtil.createSdFile(fileName);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                                new Thread(new DownLoadImageService(context,url,this,target)).start();
+                            }else {
+                                try {
+                                    fileUtil.writeToSdFromInput(url,fileName);
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }else {
+                            bitmaps=bytes.toByteArray();
+                            // bitmapBytes.add(bitmaps);
+                        }
+                        mapInfo.setBytes(bitmaps);
+                        mapInfoList.add(mapInfo);
+                    }
+                    SortClass sortClass=new SortClass();
+                    Collections.sort(mapInfoList,sortClass);
+                    for(int i=0,size=mapInfoList.size();i<size;i++){
+                        mapNames.add(mapInfoList.get(i).getMapName());
+                        Logger.e("-------:"+mapInfoList.get(i).getTime());
+                    }
+                    MapFileStatus mapFileStatus=MapFileStatus.getInstance();
+                    mapFileStatus.setMapNames(mapNames);
+                    mapFileStatus.setPictureUrls(urlList);
+                    mapFileStatus.setMapInfos(mapInfoList);
+                    mapFileStatus.setBitmapBytes(bitmapBytes);
+                }
+            }
         }
         EventBus.getDefault().postSticky(new MessageEvent(MessageEvent.Type.updateMapList));
     }

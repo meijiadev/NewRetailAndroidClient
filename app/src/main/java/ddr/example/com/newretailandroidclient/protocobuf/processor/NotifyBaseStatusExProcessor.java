@@ -29,6 +29,7 @@ public class NotifyBaseStatusExProcessor extends BaseProcessor {
        // Logger.e("---------NotifyBaseStatusExProcessor");
         Logger.d("机器ID"+commonHeader.getGuid());
         if (globalParameter.isLan()){
+            Logger.d("局域网单台机器"+commonHeader.getGuid()+globalParameter.isLan());
             NotifyBaseStatusEx notifyBaseStatusEx1=NotifyBaseStatusEx.getInstance();
             notifyBaseStatusEx1.setCurroute(notifyBaseStatusEx.getCurrroute().toStringUtf8());
             notifyBaseStatusEx1.setCurrpath(notifyBaseStatusEx.getCurrpath().toStringUtf8());
@@ -52,8 +53,8 @@ public class NotifyBaseStatusExProcessor extends BaseProcessor {
             notifyBaseStatusEx1.setTemopTaskNum(notifyBaseStatusEx.getTemporaryTaskCount());
             notifyBaseStatusEx1.setRobotid(notifyBaseStatusEx.getRobotid().toStringUtf8());
         }else {
-            if (!globalParameter.getPassword().equals("admin")) {
-                Logger.e("单台广域网机器");
+            if (!globalParameter.getPassword().equals("admin") && !globalParameter.getPassword().equals("null")) {
+                Logger.d("单台广域网机器"+globalParameter.getPassword());
                 NotifyBaseStatusEx notifyBaseStatusEx1 = NotifyBaseStatusEx.getInstance();
                 notifyBaseStatusEx1.setCurroute(notifyBaseStatusEx.getCurrroute().toStringUtf8());
                 notifyBaseStatusEx1.setCurrpath(notifyBaseStatusEx.getCurrpath().toStringUtf8());
@@ -100,7 +101,7 @@ public class NotifyBaseStatusExProcessor extends BaseProcessor {
                 notifyBaseStatusEx1.seteTaskMode(notifyBaseStatusEx.getTaskmodeValue());
                 notifyBaseStatusEx1.setTemopTaskNum(notifyBaseStatusEx.getTemporaryTaskCount());
                 notifyBaseStatusEx1.setRobotid(notifyBaseStatusEx.getRobotid().toStringUtf8());
-            }else if (globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID3)){
+            }else if (globalParameter.getPassword().equals("admin") && commonHeader.getGuid().equals(globalParameter.robotID2)){
                 Logger.e("两台广域网，机器2的数据");
                 NotifyBaseStatusExTwo notifyBaseStatusExTwo = NotifyBaseStatusExTwo.getInstance();
                 notifyBaseStatusExTwo.setCurroute(notifyBaseStatusEx.getCurrroute().toStringUtf8());

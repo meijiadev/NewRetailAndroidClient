@@ -275,7 +275,7 @@ public class SellErrorRecord extends DDRLazyFragment {
 
         String excelFileName = "/报错记录.xls";
 
-        String[] title = {"ID","报错时间"};
+        String[] title = {"ID","报错时间","报错类型"};
 
         String sheetName = "报错记录";
 

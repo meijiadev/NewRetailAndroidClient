@@ -12,14 +12,13 @@ public class GlobalParameter {
     private boolean isLan;//是否局域网登陆
     private String autoReatilResult;//自动售卖返回结果
     private String notiAutoResult;//是否自动售卖
-    private String password="ceshi";
+    private String password="null";
 
     //固定参数
     public static final int DEFAULT=0;
     public static final String ROBOT_FOLDER=Environment.getExternalStorageDirectory().getPath()+"/"+"机器人"+"/";
-    public String robotID1="retail_1";
-    public String robotID2="retail_2";
-    public String robotID3="retail_2";
+    public String robotID1="retail_1"; //retail_1
+    public String robotID2="retail_2";//retail_2
 
     public static GlobalParameter getInstance(){
         if (globalParameter==null){

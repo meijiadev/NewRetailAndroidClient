@@ -11,7 +11,8 @@ import android.graphics.PorterDuff;
 import android.util.AttributeSet;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
+
+import androidx.annotation.Nullable;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -22,7 +23,6 @@ import java.util.List;
 
 import DDRModuleProto.DDRModuleCmd;
 import DDRVLNMapProto.DDRVLNMap;
-import androidx.annotation.Nullable;
 import ddr.example.com.newretailandroidclient.R;
 import ddr.example.com.newretailandroidclient.entity.MessageEvent;
 import ddr.example.com.newretailandroidclient.entity.info.MapFileStatus;
@@ -43,6 +43,8 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
     private Paint paint;
     private float scale=1;                             //地图缩放的比例
     private ZoomLayout zoomLayout;
+    private MapEditView mapEditView;
+    private int directionW,directionH;
 
     public RobotLocationView(Context context) {
         super(context);
@@ -60,43 +62,39 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
         holder.addCallback(this);
         setZOrderOnTop(true);
         holder.setFormat(PixelFormat.TRANSPARENT);//设置背景透明
-        mapFileStatus=MapFileStatus.getInstance();
+        mapFileStatus= MapFileStatus.getInstance();
         directionBitmap = BitmapFactory.decodeResource(getResources(), R.mipmap.direction);
         paint = new Paint();
         paint.setColor(Color.parseColor("#00CED1"));
+        directionW=directionBitmap.getWidth();
+        directionH=directionBitmap.getHeight();
     }
 
     /**
      * 设置显示大小
-     *
-     * @param width
-     * @param height
      */
-    public void setBitmapSize(ZoomLayout zoomLayout,String mapName, int width, int height) {
+    public void setBitmapSize(ZoomLayout zoomLayout, MapEditView mapEditView, String mapName) {
         this.zoomLayout=zoomLayout;
+        this.mapEditView=mapEditView;
         this.mapName = mapName;
-        this.bitmapWidth = width;
-        this.bitmapHeight = height;
-        Logger.e("--------图片大小："+bitmapWidth+";"+bitmapHeight);
         EventBus.getDefault().register(this);
-        invalidate();
 
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-        int widthMode = View.MeasureSpec.getMode(widthMeasureSpec);
-        int heightMode = View.MeasureSpec.getMode(heightMeasureSpec);
-        int widthSize = View.MeasureSpec.getSize(widthMeasureSpec);
-        int heightSize = View.MeasureSpec.getSize(heightMeasureSpec);
-        if (widthMode == View.MeasureSpec.EXACTLY) {
+        int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+        int widthSize = MeasureSpec.getSize(widthMeasureSpec);
+        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
+        if (widthMode == MeasureSpec.EXACTLY) {
                 // 具体的值和match_parent
             measureWidth = widthSize;
         } else {
                 // wrap_content
             measureWidth = 1000;
-        }if (heightMode == View.MeasureSpec.EXACTLY) {
+        }if (heightMode == MeasureSpec.EXACTLY) {
             measureHeight = heightSize;
         } else {
             measureHeight = 1000;
@@ -107,14 +105,14 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
 
 
     /**
-     * 世界坐标——>像素坐标
+     * 世界坐标——>像素坐标 直接绘制到地图上的坐标
      * @param x
      * @param y
      * @return
      */
     public XyEntity toXorY(float x, float y){
-        float x1=(float)( r00*x+r01*y+t0)+(measureWidth-bitmapWidth)/2;
-        float y1=(float) (r10*x+r11*y+t1)+(measureHeight-bitmapHeight)/2;
+        float x1=(float)( r00*x+r01*y+t0)/mapEditView.getScale()+mapEditView.getMarginLeft();
+        float y1=(float) (r10*x+r11*y+t1)/mapEditView.getScale()+mapEditView.getMarginTop();
         return new XyEntity(x1,y1);
     }
 
@@ -126,6 +124,8 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
      * @return
      */
     public XyEntity toPathXy(float x,float y){
+        x=(x)*mapEditView.getScale();
+        y=(y)*mapEditView.getScale();
         float k= (float) (r00*r11-r10*r01);
         float j= (float) (r10*r01-r00*r11);
         float ax= (float) (r11*x-r01*y+r01*t1-r11*t0);
@@ -201,7 +201,8 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
      * 停止绘制
      */
     public void onStop(){
-        if (drawLocationThread!=null){
+        if (drawLocationThread!=null&&isRunning){
+            isRunning=false;
             drawLocationThread.stopThread();
         }
     }
@@ -217,9 +218,7 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
             super();
             isRunning=true;
         }
-
         public void stopThread(){
-            isRunning=false;
             boolean workIsNotFinish=true;
             while (workIsNotFinish){
                 try {
@@ -270,9 +269,10 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
      */
     private void doDraw(Canvas canvas){
         canvas.drawColor(mBackColor, PorterDuff.Mode.CLEAR);
-        scale=zoomLayout.getScale();
-        posX=(float)t0+(measureWidth-bitmapWidth)/2;
-        posY=(float)t1+(measureHeight-bitmapHeight)/2;
+        scale= zoomLayout.getScale()/mapEditView.getScale();
+        XyEntity xyEntity=getRobotLocationInWindow();
+        posX=xyEntity.getX();
+        posY=xyEntity.getY();
         if (obstacleInfos!=null){
             int size =obstacleInfos.size();
             for (int i=0;i<size;i++){
@@ -287,7 +287,7 @@ public class RobotLocationView extends SurfaceView implements SurfaceHolder.Call
                     canvas.drawLine(posX,posY,xyEntity1.getX(),xyEntity1.getY(),paint);
                 }
             }
-            canvas.drawBitmap(directionBitmap, posX-30, posY-30, paint);
+            canvas.drawBitmap(directionBitmap, posX-directionW/2, posY-directionH/2, paint);
         }
     }
 

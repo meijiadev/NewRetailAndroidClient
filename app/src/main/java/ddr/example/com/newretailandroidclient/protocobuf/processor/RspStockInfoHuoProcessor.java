@@ -38,7 +38,7 @@ public class RspStockInfoHuoProcessor extends BaseProcessor implements DownLoadC
         globalParameter=GlobalParameter.getInstance();
         List<DDRAIServiceCmd.rspStockInfo.StockInfo> stockInfoList=rspStockInfo.getStockInfoList();
         Logger.e("AI货物情况数量"+stockInfoList.size()+"-------"+stockInfoList.get(1).getImageWanUri().toStringUtf8()+"----"+stockInfoList.get(1).getImageLanUri().toStringUtf8());
-        Logger.e("AI货物情况数量"+stockInfoList.size()+"-------"+stockInfoList.get(1).getImageWanUri()+"----"+stockInfoList.get(1).getImageLanUri());
+        Logger.e("AI货物情况数量"+stockInfoList.size()+"-------"+stockInfoList.get(1).getImageWanUri()+"----"+stockInfoList.get(1).getImageLanUri()+commonHeader.getGuid());
 //        SimpleDateFormat   formatter   =   new SimpleDateFormat("yyyy-MM-dd   HH:mm:ss");
 //        Date date=new Date(System.currentTimeMillis());//系统小时数
 //        String ss=formatter.format(date);//获取当前时间
@@ -48,6 +48,8 @@ public class RspStockInfoHuoProcessor extends BaseProcessor implements DownLoadC
         for (int i=0;i<stockInfoList.size();i++){
             huoRecord=new HuoRecord();
             String huoDao="货道"+stockInfoList.get(i).getPathID();
+            Logger.e("AI货物情况数量"+stockInfoList.size()+"-------"+stockInfoList.get(i).getImageWanUri()+"----"
+                    +stockInfoList.get(i).getImageLanUri()+commonHeader.getGuid()+"---"+stockInfoList.get(i).getGoodsID().toStringUtf8()+"---");
             Logger.e("-----"+huoDao);
             String huoRemain=String.valueOf(stockInfoList.get(i).getRemainNum());
             String huoMax=String.valueOf(stockInfoList.get(i).getMaxNum());

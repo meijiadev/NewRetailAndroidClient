@@ -512,6 +512,7 @@ public class CollectingActivity extends DDRActivity {
         editor.commit();
         timer.cancel();
         task.cancel();
+        Logger.e("------113333");
         tcpClient.requestFile();
         tcpClient.getMapInfo(ByteString.copyFromUtf8(notifyBaseStatusEx.getCurroute()));
 

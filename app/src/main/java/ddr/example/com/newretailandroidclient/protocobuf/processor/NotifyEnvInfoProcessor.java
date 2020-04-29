@@ -27,7 +27,7 @@ public class NotifyEnvInfoProcessor extends BaseProcessor {
             notifyEnvInfo1.setHum(notifyEnvInfo.getHum());
             notifyEnvInfo1.setPm25(notifyEnvInfo.getPm25());
         }else {
-            if (!globalParameter.getPassword().equals("admin")) {
+            if (!globalParameter.getPassword().equals("admin")&& !globalParameter.getPassword().equals("null")) {
                 NotifyEnvInfo notifyEnvInfo1 = NotifyEnvInfo.getInstance();
                 notifyEnvInfo1.setBatt(notifyEnvInfo.getBatt());
                 notifyEnvInfo1.setTemp(notifyEnvInfo.getTemp());
@@ -37,7 +37,7 @@ public class NotifyEnvInfoProcessor extends BaseProcessor {
                 notifyEnvInfo1.setPm25(notifyEnvInfo.getPm25());
             }else{
                 if (commonHeader.getGuid().equals(globalParameter.robotID1)){
-                    Logger.e("广域网两台机器，机器1的状态显示");
+//                    Logger.e("广域网两台机器，机器1的状态显示");
                     NotifyEnvInfo notifyEnvInfo1 = NotifyEnvInfo.getInstance();
                     notifyEnvInfo1.setBatt(notifyEnvInfo.getBatt());
                     notifyEnvInfo1.setTemp(notifyEnvInfo.getTemp());
@@ -45,8 +45,8 @@ public class NotifyEnvInfoProcessor extends BaseProcessor {
                     notifyEnvInfo1.setCo2(notifyEnvInfo.getCo2());
                     notifyEnvInfo1.setHum(notifyEnvInfo.getHum());
                     notifyEnvInfo1.setPm25(notifyEnvInfo.getPm25());
-                }else if (commonHeader.getGuid().equals(globalParameter.robotID3)){
-                    Logger.e("广域网两台机器，机器2的状态显示");
+                }else if (commonHeader.getGuid().equals(globalParameter.robotID2)){
+//                    Logger.e("广域网两台机器，机器2的状态显示");
                     NotifyEnvInfoTwo notifyEnvInfoTwo = NotifyEnvInfoTwo.getInstance();
                     notifyEnvInfoTwo.setBatt(notifyEnvInfo.getBatt());
                 }

@@ -80,7 +80,7 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
         viewPager.setAdapter(mPagerAdapter);
         viewPager.setOffscreenPageLimit(mPagerAdapter.getCount());
         viewPager.addOnPageChangeListener(this);
-        viewPager.setCurrentItem(0);
+        viewPager.setCurrentItem(2);
     }
 
     @Override
@@ -94,17 +94,17 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
     @OnClick({R.id.tv_retail_count,R.id.tv_retail_record,R.id.tv_back_record,R.id.tv_huo_stork,R.id.tv_sport_count,R.id.tv_sport_record,R.id.tv_error_record,R.id.tv_chong_record})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.tv_retail_count://售卖统计
-                if (isopen_relative){
-                    relative_count.setVisibility(View.GONE);
-                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_right),null);
-                    isopen_relative=false;
-                }else {
-                    relative_count.setVisibility(View.VISIBLE);
-                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_xia),null);
-                    isopen_relative=true;
-                }
-                break;
+//            case R.id.tv_retail_count://售卖统计
+//                if (isopen_relative){
+//                    relative_count.setVisibility(View.GONE);
+//                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_right),null);
+//                    isopen_relative=false;
+//                }else {
+//                    relative_count.setVisibility(View.VISIBLE);
+//                    tv_retail_count.setCompoundDrawablesRelativeWithIntrinsicBounds(null,null,getResources().getDrawable(R.mipmap.back_xia),null);
+//                    isopen_relative=true;
+//                }
+//                break;
             case R.id.tv_sport_count:
                 if (isopen_sport){
                     relative_sport.setVisibility(View.GONE);
@@ -116,12 +116,12 @@ public class SellDataFrament extends DDRLazyFragment<HomeActivity> implements Vi
                     isopen_sport=true;
                 }
                 break;
-            case R.id.tv_retail_record:
-                viewPager.setCurrentItem(0);
-                break;
-            case R.id.tv_back_record:
-                viewPager.setCurrentItem(1);
-                break;
+//            case R.id.tv_retail_record:
+//                viewPager.setCurrentItem(0);
+//                break;
+//            case R.id.tv_back_record:
+//                viewPager.setCurrentItem(1);
+//                break;
             case R.id.tv_huo_stork:
                 viewPager.setCurrentItem(2);
                 break;
