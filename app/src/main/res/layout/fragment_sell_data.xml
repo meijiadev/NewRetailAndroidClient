@@ -10,7 +10,8 @@
             android:layout_width="141dp"
             android:layout_height="wrap_content"
             android:layout_marginLeft="18dp"
-            android:id="@+id/relative_count_all">
+            android:id="@+id/relative_count_all"
+            android:visibility="gone">
         <TextView
             android:layout_width="141dp"
             android:layout_height="24dp"

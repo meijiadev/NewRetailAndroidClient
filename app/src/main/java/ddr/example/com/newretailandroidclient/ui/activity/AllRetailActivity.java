@@ -61,8 +61,6 @@ import ddr.example.com.newretailandroidclient.widget.textview.GridTextView;
 import ddr.example.com.newretailandroidclient.widget.view.CustomPopuWindow;
 import ddr.example.com.newretailandroidclient.widget.view.GridLayerView;
 import ddr.example.com.newretailandroidclient.widget.view.LineView;
-import ddr.example.com.newretailandroidclient.widget.view.MapImageView0;
-import ddr.example.com.newretailandroidclient.widget.view.MapImageView1;
 import ddr.example.com.newretailandroidclient.widget.view.PointView;
 import ddr.example.com.newretailandroidclient.widget.view.ZoomImageView;
 
@@ -146,10 +144,12 @@ public class AllRetailActivity extends DDRActivity {
             case updateDDRVLNMap:
                 try {
                     Logger.e("------地图名："+mapFileStatus.getMapName()+"当前"+mapName+"地图列表长度"+mapFileStatus.getMapInfos().size());
-                    transformMapInfo(mapFileStatus.getMapInfos());
+                    mapInfoList=mapFileStatus.getMapInfos();
+                    Logger.e("目标点大小"+mapInfoList.size());
+//                    transformMapInfo(mapFileStatus.getMapInfos());
                     pathLines = ListTool.deepCopy(mapFileStatus.getPathLines());
                     targetPoints = ListTool.deepCopy(mapFileStatus.getTargetPoints());
-                    Logger.e("目标点大小"+targetPoints.size());
+                    Logger.e("目标点大小"+targetPoints.size()+mapInfoList.size());
                     if (mapInfoList.size()>0){
                         for (int i=0;i<mapInfoList.size();i++){
                             if (mapInfoList.get(i).getMapName().equals(mapName)){
@@ -159,7 +159,7 @@ public class AllRetailActivity extends DDRActivity {
                                     lookBitmap=getBitmapFromByte(bytes);
 //                                    iv_all_mapImage.setBitamp(getBitmapFromByte(bytes));
                                 }else {
-                                    Logger.e("地图名图片本地");
+                                    Logger.e("地图名图片字节流");
                                     FileInputStream fis = null;
                                     try {
                                         fis = new FileInputStream(mapInfoList.get(i).getBitmap());
@@ -222,6 +222,8 @@ public class AllRetailActivity extends DDRActivity {
     protected void initData() {
         super.initData();
         tcpClient=TcpClient.getInstance(getActivity(), ClientMessageDispatcher.getInstance());
+        Logger.e("------111111");
+        tcpClient.requestFile();     //请求所有地图
         globalParameter = GlobalParameter.getInstance();
         mapFileStatus = MapFileStatus.getInstance();
         notifyBaseStatusEx = NotifyBaseStatusEx.getInstance();
@@ -229,10 +231,12 @@ public class AllRetailActivity extends DDRActivity {
         notifyEnvInfoTwo = NotifyEnvInfoTwo.getInstance();
         notifyEnvInfo = NotifyEnvInfo.getInstance();
         lineView=LineView.getInstance(getApplication());
-        tcpClient.requestFile();     //请求所有地图
 //        setMapImage();
         isAllChecked();
-        postGoodProduct("product");
+//        for (int i=0;i<mapFileStatus.getcTaskModes().size();i++){
+//            groupList.add(mapFileStatus.getcTaskModes().get(i).getName());
+//        }
+//        taskCheckAdapter.setNewData(groupList);
         mv_sell_auto.setRotaion(false);
     }
 
@@ -304,8 +308,8 @@ public class AllRetailActivity extends DDRActivity {
             try {
                 DecimalFormat df = new DecimalFormat("0");
                 DecimalFormat format = new DecimalFormat("0.00");
-//                mapName = notifyBaseStatusEx.getCurroute();
-//                taskName = notifyBaseStatusEx.getCurrpath();
+                mapName = notifyBaseStatusEx.getCurroute();
+                taskName = notifyBaseStatusEx.getCurrpath();
 //                lsNum=notifyBaseStatusEx.getTemopTaskNum();
 //                Logger.e("电量"+notifyEnvInfo.getBatt());
 //                Logger.d("xy"+notifyBaseStatusEx.getPosX()+"----"+notifyBaseStatusEx.getPosY());
@@ -322,7 +326,7 @@ public class AllRetailActivity extends DDRActivity {
                     targetPoint.setName("机器一");
                     targetPointList.add(targetPoint);
                 }else {
-                    Logger.e("没有收到设备1当前坐标");
+//                    Logger.e("没有收到设备1当前坐标");
                 }
                 if (notifyEnvInfo.getBatt()>0 && String.valueOf(notifyEnvInfo.getBatt())!=null){
                     batteryNum=Integer.parseInt(df.format(notifyEnvInfo.getBatt()));
@@ -387,8 +391,8 @@ public class AllRetailActivity extends DDRActivity {
             try {
                 DecimalFormat df = new DecimalFormat("0");
                 DecimalFormat format = new DecimalFormat("0.00");
-                mapName = notifyBaseStatusExTwo.getCurroute();
-                taskName = notifyBaseStatusExTwo.getCurrpath();
+//                mapName = notifyBaseStatusExTwo.getCurroute();
+//                taskName = notifyBaseStatusExTwo.getCurrpath();
                 TargetPoint targetPoint1= new TargetPoint();
                 x2=notifyBaseStatusExTwo.getPosX();
                 y2=notifyBaseStatusExTwo.getPosY();
@@ -509,6 +513,41 @@ public class AllRetailActivity extends DDRActivity {
     }
 
     /**
+     * 添加或删除临时任务to指定机器人
+     * @param routeName
+     * @param taskName
+     * @param num
+     * @param type
+     */
+
+    private void addOrDetTemporary(ByteString routeName, ByteString taskName, int num, int type,String guid){
+        DDRVLNMap.eTaskOperationalType eTaskOperationalType;
+        switch (type){
+            case 0:
+                eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalError;
+                break;
+            case 1:
+                eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalStopTask;
+                break;
+            case 2:
+                eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalAddTemporary;
+                break;
+            default:
+                throw new IllegalStateException("Unexpected value: " + type);
+        }
+        DDRVLNMap.reqTaskOperational.OptItem optItem= DDRVLNMap.reqTaskOperational.OptItem.newBuilder()
+                .setOnerouteName(routeName)
+                .setTaskName(taskName)
+                .setRunCount(num)
+                .setType(eTaskOperationalType)
+                .build();
+        DDRVLNMap.reqTaskOperational reqTaskOperational=DDRVLNMap.reqTaskOperational.newBuilder()
+                .setOptSet(optItem)
+                .build();
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer,guid),reqTaskOperational);
+    }
+
+    /**
      * 机器人暂停/重新运动
      * @param value
      */
@@ -524,108 +563,117 @@ public class AllRetailActivity extends DDRActivity {
      * 点击开始事件
      */
     private void onClickStart(){
-        switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备1正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusEx.getMode()) {
-                    case 1:
-                        if (taskName!=null && !taskName.equals("PathError")){
-                            addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
-                        }else {
-                            toast("当前无任务，请先右下角选择任务执行");
-                        }                        break;
-                    case 3:
-                        switch (notifyBaseStatusEx.getSonMode()){
-                            case 16:
-                                toast("设备1正在运动中");
-                                break;
-                            case 17:
-                                pauseOrResume("Resume");
-                                break;
-                        }
-                        break;
-                }
-                break;
+        if (notifyBaseStatusEx!=null){
+            switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备1正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusEx.getMode()) {
+                        case 1:
+                            if (taskName!=null && !taskName.equals("PathError")){
+                                addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2,globalParameter.robotID1);
+                            }else {
+                                toast("当前无任务，请先右下角选择任务执行");
+                            }                        break;
+                        case 3:
+                            switch (notifyBaseStatusEx.getSonMode()){
+                                case 16:
+                                    toast("设备1正在运动中");
+                                    break;
+                                case 17:
+                                    pauseOrResume("Resume");
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
         }
-        switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备2正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusExTwo.getMode()) {
-                    case 1:
-                        if (taskName!=null && !taskName.equals("PathError")){
-                            addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
-                        }else {
-                            toast("当前无任务，请先右下角选择任务执行");
-                        }
-                        break;
-                    case 3:
-                        switch (notifyBaseStatusExTwo.getSonMode()){
-                            case 16:
-                                toast("设备2正在执行中");
-                                break;
-                            case 17:
-                                pauseOrResume("Resume");
-                                break;
-                        }
-                        break;
-                }
-                break;
+        if (notifyBaseStatusExTwo!=null){
+            switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备2正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusExTwo.getMode()) {
+                        case 1:
+                            if (taskName!=null && !taskName.equals("PathError")){
+                                addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2,globalParameter.robotID2);
+                            }else {
+                                toast("当前无任务，请先右下角选择任务执行");
+                            }
+                            break;
+                        case 3:
+                            switch (notifyBaseStatusExTwo.getSonMode()){
+                                case 16:
+                                    toast("设备2正在执行中");
+                                    break;
+                                case 17:
+                                    pauseOrResume("Resume");
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
         }
+
     }
 
     /**
      * 点击暂停
      */
     private void onClickStop(){
-        switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备1正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusEx.getMode()) {
-                    case 1:
-                        toast("设备1正在待命，请先进入执行状态");
-                        break;
-                    case 3:
-                        switch (notifyBaseStatusEx.getSonMode()){
-                            case 16:
-                                pauseOrResume("Pause");
-                                toast("设备1暂停，点击执行可恢复行政");
-                                break;
-                            case 17:
-                                toast("设备2已处于暂停状态中");
-                                break;
-                        }
-                        break;
-                }
-                break;
+        if (notifyBaseStatusEx!=null){
+            switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备1正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusEx.getMode()) {
+                        case 1:
+                            toast("设备1正在待命，请先进入执行状态");
+                            break;
+                        case 3:
+                            switch (notifyBaseStatusEx.getSonMode()){
+                                case 16:
+                                    pauseOrResume("Pause");
+                                    toast("设备1暂停，点击执行可恢复行政");
+                                    break;
+                                case 17:
+                                    toast("设备2已处于暂停状态中");
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
         }
-        switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备2正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusExTwo.getMode()) {
-                    case 1:
-                        toast("设备2正在待命，请先进入执行状态");
-                        break;
-                    case 3:
-                        switch (notifyBaseStatusExTwo.getSonMode()){
-                            case 16:
-                                pauseOrResume("Pause");
-                                toast("设备2暂停，点击执行可恢复行政");
-                                break;
-                            case 17:
-                                toast("设备2已处于暂停状态中");
-                                break;
-                        }
-                        break;
-                }
-                break;
+        if (notifyBaseStatusExTwo!=null){
+            switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备2正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusExTwo.getMode()) {
+                        case 1:
+                            toast("设备2正在待命，请先进入执行状态");
+                            break;
+                        case 3:
+                            switch (notifyBaseStatusExTwo.getSonMode()){
+                                case 16:
+                                    pauseOrResume("Pause");
+                                    toast("设备2暂停，点击执行可恢复行政");
+                                    break;
+                                case 17:
+                                    toast("设备2已处于暂停状态中");
+                                    break;
+                            }
+                            break;
+                    }
+                    break;
+            }
         }
     }
 
@@ -633,38 +681,43 @@ public class AllRetailActivity extends DDRActivity {
      * 点击退出事件
      */
     private void onClickEnd(){
-        switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备1正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusEx.getMode()) {
-                    case 1:
-                        toast("设备1正在待命中");
-                        break;
-                    case 3:
+        if (notifyBaseStatusEx!=null){
+            switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备1正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusEx.getMode()) {
+                        case 1:
+                            toast("设备1正在待命中");
+                            break;
+                        case 3:
 //                                toast("请稍等，正在退出");
-                        addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1);
-                        break;
-                }
-                break;
+                            addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1,globalParameter.robotID1);
+                            break;
+                    }
+                    break;
+            }
         }
+
 //        Logger.e("模式11111"+notifyBaseStatusExTwo.getMode()+"---"+notifyBaseStatusExTwo.geteSelfCalibStatus());
-        switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
-            case 0:
-                toast("设备2正在自标定");
-                break;
-            case 1:
-                switch (notifyBaseStatusExTwo.getMode()) {
-                    case 1:
-                        toast("设备2正在待命中");
-                        break;
-                    case 3:
-                        toast("请稍等，正在退出");
-                        addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1);
-                        break;
-                }
-                break;
+        if (notifyBaseStatusExTwo!=null){
+            switch (notifyBaseStatusExTwo.geteSelfCalibStatus()) {
+                case 0:
+                    toast("设备2正在自标定");
+                    break;
+                case 1:
+                    switch (notifyBaseStatusExTwo.getMode()) {
+                        case 1:
+                            toast("设备2正在待命中");
+                            break;
+                        case 3:
+                            toast("请稍等，正在退出");
+                            addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1,globalParameter.robotID2);
+                            break;
+                    }
+                    break;
+            }
         }
     }
 
@@ -741,10 +794,15 @@ public class AllRetailActivity extends DDRActivity {
                             .setListener(new InputDialog.OnListener() {
                                 @Override
                                 public void onConfirm(BaseDialog dialog, String content) {
-                                    taskName=groupList.get(position);
-                                    String showName=taskName.replaceAll("DDRTask_","");
-                                    showName=showName.replaceAll(".task","");
-                                    tv_now_task.setText(showName);
+                                    if (groupList.size()>0){
+                                        taskName=groupList.get(position);
+                                        String showName=taskName.replaceAll("DDRTask_","");
+                                        showName=showName.replaceAll(".task","");
+                                        tv_now_task.setText(showName);
+                                    }else {
+                                        Logger.e("Sen任务名"+groupList.size());
+                                    }
+
 //                                    iv_all_mapImage.setTaskName(taskName);
                                     if (!content.isEmpty() && Integer.parseInt(content)>0 && Integer.parseInt(content)<1000 ){
                                         try {
@@ -755,7 +813,8 @@ public class AllRetailActivity extends DDRActivity {
                                     }else {
                                         lsNum=1;
                                     }
-                                    addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
+                                    addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2,globalParameter.robotID1);
+                                    addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2,globalParameter.robotID2);
                                     Logger.e("当前临时任务状态"+BaseCmd.eCmdRspType.values().length);
                                 }
                                 @Override

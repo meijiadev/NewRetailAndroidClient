@@ -229,6 +229,7 @@ public class HomeActivity extends DDRActivity implements ViewPager.OnPageChangeL
         notifyEnvInfoTwo=NotifyEnvInfoTwo.getInstance();
         notifyEnvInfo=NotifyEnvInfo.getInstance();
         ImageLoader.clear(this); //清除图片缓存
+        Logger.e("------144444");
         tcpClient.requestFile();     //请求所有地图
         sharedPreferences = PreferenceManager.getDefaultSharedPreferences(this);
         editor = sharedPreferences.edit();

@@ -67,6 +67,8 @@ public class MessageEvent {
         getSpecificPoint10,
         getSpecificPoint11,
 
+        notifyTCPDisconnected,//tcp断开连接
+
         updataSellsRecord,  //获取零售记录
         updataSellHuoRecord,//获取商品信息
         updateGoodProduct,//获取商品详细

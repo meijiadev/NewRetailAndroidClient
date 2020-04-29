@@ -155,6 +155,7 @@ public class TcpClient extends BaseSocketConnection {
                 }else {
                     Logger.e("-------断开连接的页面："+activity.getLocalClassName());
                     showDialog(activity );
+                    EventBus.getDefault().post(new MessageEvent(MessageEvent.Type.notifyTCPDisconnected));
                 }
             }
         }
@@ -780,6 +781,26 @@ public class TcpClient extends BaseSocketConnection {
                 .setMode(eCmdIPCMode)
                 .build();
         tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqCmdIPC);
+    }
+
+    /**
+     * 添加或删除临时任务
+     * @param routeName
+     * @param taskName
+     * @param num
+     * @param type
+     */
+    public void addOrDetTemporary(ByteString routeName, ByteString taskName,int num,int type){
+        DDRVLNMap.reqTaskOperational.OptItem optItem= DDRVLNMap.reqTaskOperational.OptItem.newBuilder()
+                .setOnerouteName(routeName)
+                .setTaskName(taskName)
+                .setRunCount(num)
+                .setTypeValue(type)
+                .build();
+        DDRVLNMap.reqTaskOperational reqTaskOperational=DDRVLNMap.reqTaskOperational.newBuilder()
+                .setOptSet(optItem)
+                .build();
+        sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqTaskOperational);
     }
 
 

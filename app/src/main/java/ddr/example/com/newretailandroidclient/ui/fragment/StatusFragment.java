@@ -74,10 +74,9 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
     RelativeLayout shrinkTailLayout; // 伸缩的尾部布局
     @BindView(R.id.shrink_layout)
     RelativeLayout shrinkLayout;
-    @BindView(R.id.tv_ti_map)
-    TextView tvTiMap;
-    @BindView(R.id.tv_create_map)
-    TextView tvCreateMap;
+    @BindView(R.id.tv_warn)
+    TextView tvWarn;                  // 无地图显示提醒
+
     //绘制地图+路径
     @BindView(R.id.iv_map)
     MapImageView0 mapImageView;
@@ -185,6 +184,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 break;
             case getSpecificPoint4:
                 toast("生成路径失败");
+                isRunabPoint=false;
                 break;
             case getSpecificPoint5:
                 toast("当前处于自标定");
@@ -194,13 +194,14 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                 break;
             case getSpecificPoint9:
                 toast("完成当前任务，开始时段任务");
+                isRunabPoint=false;
                 break;
             case getSpecificPoint10:
                 toast("无任务，原地待命");
                 break;
             case getSpecificPoint11:
-//                Logger.e("AB点"+sPoint);
                 toast("开始前往"+sPoint);
+                break;
             case switchMapSucceed:
                 for (int i = 0; i < targetPoints.size(); i++) {
                     targetPoints.get(i).setSelected(false);
@@ -221,12 +222,11 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                             }else {
                                 mapImageView.setMapBitmap(mapName);
                             }
+                            tvWarn.setVisibility(View.GONE);
                             }
                         }
                     }
                     Logger.e("group列数"+groupList.size()+"列数1"+mapFileStatus.getTaskModes().size()+" -- "+mapFileStatus.getcTaskModes().size());
-                    tvTiMap.setVisibility(View.GONE);
-                    tvCreateMap.setVisibility(View.GONE);
                     groupList = new ArrayList<>();
                     targetPoints=new ArrayList<>();
                     for (TaskMode taskMode:mapFileStatus.getcTaskModes()){
@@ -328,11 +328,19 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
         switch (notifyBaseStatusEx.geteTaskMode()){
             case 1:
                 tv_task_num.setText(String.valueOf(taskNum)+"/"+lsNum+" 次");
-                isRunabPoint=false;
+                if (mapImageView!=null&&isRunabPoint){
+                    isRunabPoint=false;
+                    mapImageView.setABPointLine(false);
+                }
                 break;
             case 2:
                 tv_task_num.setText(String.valueOf(taskNum)+"/"+mapFileStatus.AllCount+" 次");
-                isRunabPoint=false;
+                if (mapImageView!=null){
+                    if (mapImageView!=null&&isRunabPoint){
+                        isRunabPoint=false;
+                        mapImageView.setABPointLine(false);
+                    }
+                }
                 break;
             case 3:
                 tv_task_num.setText(" ");
@@ -340,10 +348,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
             case 4:
             case 5:
                 tv_task_num.setText(" ");
-                isRunabPoint=true;
                 break;
-
-
         }
         switch (notifyBaseStatusEx.geteSelfCalibStatus()) {
             case 0:
@@ -362,6 +367,9 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                         }else {
                             tv_work_statue.setText("运动中");
                         }
+                        break;
+                    case 2:
+                        tv_work_statue.setText("正在采集中...");
                         break;
                     case 3:
                         tv_work_statue.setText("运动中");
@@ -452,7 +460,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
     }
 
 
-    @OnClick({R.id.iv_shrink,R.id.tv_now_task,R.id.tv_create_map,R.id.tv_restart_point})
+    @OnClick({R.id.iv_shrink,R.id.tv_now_task,R.id.tv_restart_point,R.id.tv_warn})
     public void onViewClicked(View view) {
         switch (view.getId()){
             case R.id.iv_shrink:
@@ -466,36 +474,19 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                     ivShrink.setImageResource(R.mipmap.iv_back);
                 }
                 break;
+            case R.id.tv_warn:
+                Logger.e("点击");
+                if (!notifyBaseStatusEx.getCurroute().equals("")){
+                    tcpClient.getMapInfo(ByteString.copyFromUtf8(notifyBaseStatusEx.getCurroute()));
+                    toast("正在加载地图！");
+                }else {
+                    toast("当前并无正在使用中的地图，请确定有采集的地图并选择一张地图使用！");
+                }
+                break;
             case R.id.tv_now_task:
                 showTaskPopupWindow(tv_now_task);
                 tv_now_task.setBackgroundResource(R.drawable.task_check_bg);
                 iv_task_xl.setImageResource(R.mipmap.xl_5);
-                break;
-            case R.id.tv_create_map:
-                new InputDialog.Builder(getAttachActivity())
-                        .setTitle("采集地图")
-                        .setHint("输入地图名称")
-                        .setListener(new InputDialog.OnListener() {
-                            @Override
-                            public void onConfirm(BaseDialog dialog, String content) {
-                                if (!content.isEmpty()){
-                                    content=content.replaceAll(" ","");
-                                    String name="OneRoute_"+content;
-                                    BaseCmd.reqCmdStartActionMode reqCmdStartActionMode=BaseCmd.reqCmdStartActionMode.newBuilder()
-                                            .setMode(BaseCmd.eCmdActionMode.eRec)
-                                            .setRouteName(ByteString.copyFromUtf8(name))
-                                            .build();
-                                    tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqCmdStartActionMode);
-                                    startActivity(CollectingActivity.class);
-                                }else {
-                                    toast("请输入地图名字");
-                                }
-                            }
-                            @Override
-                            public void onCancel(BaseDialog dialog) {
-                                toast("取消新建地图");
-                            }
-                        }).show();
                 break;
             case R.id.tv_restart_point:
                 float theat= (float) 1.0;
@@ -530,49 +521,44 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
         BaseCmd.reqCmdPauseResume reqCmdPauseResume=BaseCmd.reqCmdPauseResume.newBuilder()
                 .setError(value)
                 .build();
-        BaseCmd.CommonHeader commonHeader=BaseCmd.CommonHeader.newBuilder()
-                .setFromCltType(BaseCmd.eCltType.eLocalAndroidClient)
-                .setToCltType(BaseCmd.eCltType.eModuleServer)
-                .addFlowDirection(BaseCmd.CommonHeader.eFlowDir.Forward)
-                .build();
-        tcpClient.sendData(commonHeader,reqCmdPauseResume);
+        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqCmdPauseResume);
         Logger.e("机器人暂停/重新运动");
     }
 
-    /**
-     * 添加或删除临时任务
-     * @param routeName
-     * @param taskName
-     * @param num
-     * @param type
-     */
-
-    private void addOrDetTemporary(ByteString routeName, ByteString taskName,int num,int type){
-        DDRVLNMap.eTaskOperationalType eTaskOperationalType;
-        switch (type){
-            case 0:
-                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalError;
-                break;
-            case 1:
-                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalStopTask;
-                break;
-            case 2:
-                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalAddTemporary;
-                break;
-            default:
-                throw new IllegalStateException("Unexpected value: " + type);
-        }
-        DDRVLNMap.reqTaskOperational.OptItem optItem= DDRVLNMap.reqTaskOperational.OptItem.newBuilder()
-                .setOnerouteName(routeName)
-                .setTaskName(taskName)
-                .setRunCount(num)
-                .setType(eTaskOperationalType)
-                .build();
-        DDRVLNMap.reqTaskOperational reqTaskOperational=DDRVLNMap.reqTaskOperational.newBuilder()
-                .setOptSet(optItem)
-                .build();
-        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqTaskOperational);
-    }
+//    /**
+//     * 添加或删除临时任务
+//     * @param routeName
+//     * @param taskName
+//     * @param num
+//     * @param type
+//     */
+//
+//    private void addOrDetTemporary(ByteString routeName, ByteString taskName,int num,int type){
+//        DDRVLNMap.eTaskOperationalType eTaskOperationalType;
+//        switch (type){
+//            case 0:
+//                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalError;
+//                break;
+//            case 1:
+//                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalStopTask;
+//                break;
+//            case 2:
+//                 eTaskOperationalType=DDRVLNMap.eTaskOperationalType.eTaskOperationalAddTemporary;
+//                break;
+//            default:
+//                throw new IllegalStateException("Unexpected value: " + type);
+//        }
+//        DDRVLNMap.reqTaskOperational.OptItem optItem= DDRVLNMap.reqTaskOperational.OptItem.newBuilder()
+//                .setOnerouteName(routeName)
+//                .setTaskName(taskName)
+//                .setRunCount(num)
+//                .setType(eTaskOperationalType)
+//                .build();
+//        DDRVLNMap.reqTaskOperational reqTaskOperational=DDRVLNMap.reqTaskOperational.newBuilder()
+//                .setOptSet(optItem)
+//                .build();
+//        tcpClient.sendData(CmdSchedule.commonHeader(BaseCmd.eCltType.eModuleServer),reqTaskOperational);
+//    }
 
     /**
      * 导航去目标点或者恢复
@@ -647,7 +633,8 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                                     }else {
                                         lsNum=1;
                                     }
-                                    addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
+                                    tcpClient.addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
+                                    isRunabPoint=false;
                                     Logger.e("当前临时任务状态"+BaseCmd.eCmdRspType.values().length);
                                 }
                                 @Override
@@ -681,6 +668,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                                         targetPoints.get(position).setSelected(true);
                                         targetPointAdapter.setNewData(targetPoints);
                                         sPoint = targetPoints.get(position).getName();
+                                        isRunabPoint=true;
                                     }
 
                                     @Override
@@ -713,12 +701,9 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
             case 1:
                 switch (notifyBaseStatusEx.getMode()) {
                     case 1:
-//                        sendModel(BaseCmd.eCmdActionMode.eAutoDynamic);
-                        //Logger.e("待命模式" + modeView.getText());
-                        Logger.e("----mapName:"+mapName+"taskName:"+taskName);
                         if (mapName!=null && taskName!=null && !taskName.equals("PathError")){
                             toast("请稍等，正在进入");
-                            addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
+                            tcpClient.addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,2);
                         }else {
                             toast("请先建立任务");
                         }
@@ -786,8 +771,7 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
                         break;
                     case 3:
                         toast("请稍等，正在退出");
-//                        exitModel();
-                        addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1);
+                        tcpClient.addOrDetTemporary(ByteString.copyFromUtf8(mapName),ByteString.copyFromUtf8(taskName),lsNum,1);
                         for (int i = 0; i < targetPoints.size(); i++) {
                             targetPoints.get(i).setSelected(false);
                         }
@@ -843,30 +827,53 @@ public final class StatusFragment extends DDRLazyFragment<HomeActivity>implement
     public void setUserVisibleHint(boolean isVisibleToUser) {
         super.setUserVisibleHint(isVisibleToUser);
         globalParameter=GlobalParameter.getInstance();
-        if (globalParameter.isLan()){
-            if (isVisibleToUser){
-                // 相当于onResume()方法--获取焦点
-                Logger.e("可见");
-                if (mapImageView1!=null){
-                    if (!mapImageView1.drawThread.isAlive()){
-                        mapImageView.invalidate();
-                        mapImageView1.startThread();
-                        mapImageView.setMapBitmap(notifyBaseStatusEx.getCurroute());
-                    }
-                }
-            }else {
-                // 相当于onpause()方法---失去焦点
-                Logger.e("不可见");
-                if (mapImageView1!=null){
-                    if (mapImageView1.drawThread.isAlive()){
-                        mapImageView1.onStop();
-                    }
-                }
-
+        if (isVisibleToUser){
+            // 相当于onResume()方法--获取焦点
+            Logger.e("可见");
+            if (notifyBaseStatusEx!=null){
+                tcpClient.getMapInfo(ByteString.copyFromUtf8(notifyBaseStatusEx.getCurroute()));
+            }
+            if (mapImageView1!=null&&!mapImageView1.drawThread.isAlive()){
+                mapImageView1.setMapImageView0(mapImageView);
+                mapImageView.invalidate();
+                mapImageView1.startThread();
+                mapImageView.setMapBitmap(notifyBaseStatusEx.getCurroute());
+            }
+            //当服务断开时
+            if (tcpClient!=null&&!tcpClient.isConnected()){
+                tv_work_statue.setText("断开连接");
             }
         }else {
-            Logger.e("广域网不预先加载");
+            // 相当于onpause()方法---失去焦点
+            Logger.e("不可见");
+            if (mapImageView1!=null&&mapImageView1.drawThread.isAlive()){
+                mapImageView1.onStop();
+            }
         }
+//        if (globalParameter.isLan()){
+//            if (isVisibleToUser){
+//                // 相当于onResume()方法--获取焦点
+//                Logger.e("可见");
+//                if (mapImageView1!=null){
+//                    if (!mapImageView1.drawThread.isAlive()){
+//                        mapImageView.invalidate();
+//                        mapImageView1.startThread();
+//                        mapImageView.setMapBitmap(notifyBaseStatusEx.getCurroute());
+//                    }
+//                }
+//            }else {
+//                // 相当于onpause()方法---失去焦点
+////                Logger.e("不可见");
+////                if (mapImageView1!=null){
+////                    if (mapImageView1.drawThread.isAlive()){
+////                        mapImageView1.onStop();
+////                    }
+////                }
+////
+//            }
+//        }else {
+//            Logger.e("广域网不预先加载");
+//        }
 
     }
 

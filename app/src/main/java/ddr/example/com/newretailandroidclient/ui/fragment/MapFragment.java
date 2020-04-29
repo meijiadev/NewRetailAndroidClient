@@ -70,6 +70,7 @@ import ddr.example.com.newretailandroidclient.ui.adapter.StringAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.TargetPointAdapter;
 import ddr.example.com.newretailandroidclient.ui.adapter.TaskAdapter;
 import ddr.example.com.newretailandroidclient.ui.dialog.InputDialog;
+import ddr.example.com.newretailandroidclient.ui.dialog.RelocationDialog;
 import ddr.example.com.newretailandroidclient.ui.dialog.SelectDialog;
 import ddr.example.com.newretailandroidclient.ui.dialog.WaitDialog;
 import ddr.example.com.newretailandroidclient.widget.edit.DDREditText;
@@ -1550,6 +1551,7 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
     }
 
     private BaseDialog waitDialog2;
+    private BaseDialog relocationDialog;
     private NotifyBaseStatusEx notifyBaseStatusEx = NotifyBaseStatusEx.getInstance();
     private int relocationStatus;
 
@@ -1664,26 +1666,14 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
                     Logger.e("采集完并切换地图");
                     tcpClient.getMapInfo(ByteString.copyFromUtf8(notifyBaseStatusEx.getCurroute()));
                 }
-                getAttachActivity().postDelayed(() -> {
-                    waitDialog2 = new WaitDialog.Builder(getAttachActivity())
-                            .setMessage("正在自动定位中可能需要1~3分钟，请稍后...")
-                            .show();
-                }, 600);
-                break;
-            case updateBaseStatus:
-                break;
-            case enterRelocationMode:
-                if (mapIsUsing){
-                    waitDialog2=new WaitDialog.Builder(getActivity())
-                            .setMessage("正在重新定位中可能需要1~3分钟时间...")
-                            .show();
-                    mapIsUsing=false;
-                }
                 break;
             case updateRelocationStatus:
                 relocationStatus= (int) messageEvent.getData();
                 switch (relocationStatus){
                     case 0:
+                        if (relocationDialog!=null&&relocationDialog.isShowing()){
+                            relocationDialog.dismiss();
+                        }
                         new InputDialog.Builder(getAttachActivity())
                                 .setEditVisibility(View.GONE)
                                 .setTitle("自动定位失败，是否进入手动定位")
@@ -1707,17 +1697,37 @@ public class MapFragment extends DDRLazyFragment<HomeActivity> {
                         break;
                     case 1:
                         toast("定位成功！");
-                        tcpClient.getMapInfo(ByteString.copyFromUtf8(notifyBaseStatusEx.getCurroute()));
+                        if (relocationDialog!=null){
+                            relocationDialog.dismiss();
+                        }
+                        break;
+                    case 2:
+                        Logger.e("进入重定位...");
+                        relocationDialog = new RelocationDialog.Builder(getActivity())
+                                .setAutoDismiss(true)
+                                .setListener(new RelocationDialog.OnListener() {
+                                    @Override
+                                    public void onHandMovement() {
+                                        Logger.e("地图地址:"+switchBitmapPath);
+                                        tcpClient.exitModel();
+                                        Intent intent = new Intent(getAttachActivity(), RelocationActivity.class);
+                                        intent.putExtra("currentBitmap", switchBitmapPath);
+                                        intent.putExtra("currentMapName", switchMapName);
+                                        startActivity(intent);
+                                    }
+                                    @Override
+                                    public void onCancelRelocation() {
+                                        tcpClient.exitModel();
+
+                                    }
+                                })
+                                .show();
+                        break;
+                    case 3:
+
                         break;
                 }
-                if (waitDialog2!=null&&waitDialog2.isShowing()){
-                    waitDialog2.dismiss();
-                }
                 break;
-
-
         }
     }
-
-
 }
