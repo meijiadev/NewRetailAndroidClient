@@ -30,7 +30,7 @@ public class RspGoodsDetailProcessor extends BaseProcessor{
         huoProduct.setImageLan(rspGoodsDetail.getImageLanUri().toStringUtf8());
         huoProduct.setDescription(rspGoodsDetail.getDescription().toStringUtf8());
         huoProduct.setImageWan(rspGoodsDetail.getImageWanUri().toStringUtf8());
-        huoProduct.setPrice(String.valueOf(rspGoodsDetail.getUnitprice()));
+        huoProduct.setPrice(rspGoodsDetail.getUnitprice().toStringUtf8());
         huoProduct.setStartdata(rspGoodsDetail.getProductdate().toStringUtf8());
         huoProduct.setLifedata(rspGoodsDetail.getShelflife().toStringUtf8());
         Logger.e("返回信息"+rspGoodsDetail.getImageWanUri().toStringUtf8());

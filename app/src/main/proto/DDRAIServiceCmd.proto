@@ -78,7 +78,7 @@ message rspGoodsDetail
 	bytes productdate = 5;
 	bytes imageLanUri = 6;
 	bytes imageWanUri = 7;
-	float unitprice = 8;
+	bytes unitprice = 8;
 }
 //获取地图运行记录
 message reqGetMapRecords
@@ -139,6 +139,11 @@ message ErrorLog
 		eMotorFailure = 5;		//电机实效
 		ePalletStop = 6;		//货盘停止
 		ePalletStockTimeOut = 7;	//货柜存货未取超时
+		//售卖安卓相关
+		eEmbeddedSystemLose = 8; //售卖平板嵌入式连接失败
+		eServerLose = 9; //售卖HTTP后台失联
+	    ePayOutError = 10; //售卖出货失败
+		eStealAlarm = 11;//售卖防盗告警
 	}
 	int64 time = 1;
 	eReason reason = 2;

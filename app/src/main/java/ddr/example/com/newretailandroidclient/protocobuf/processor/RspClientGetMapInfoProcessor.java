@@ -26,7 +26,6 @@ import ddr.example.com.newretailandroidclient.entity.info.MapInfo;
 import ddr.example.com.newretailandroidclient.helper.SortClass;
 import ddr.example.com.newretailandroidclient.other.Logger;
 
-
 /**
  * 接收地图信息
  */

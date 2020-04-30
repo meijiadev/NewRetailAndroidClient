@@ -57,6 +57,18 @@ public class RspGetErrorRecordsProcessor extends BaseProcessor{
                 case 7:
                     resonV="货柜存货未取超时";
                     break;
+                case 8:
+                    resonV="售卖平板嵌入式连接失败";
+                    break;
+                case 9:
+                    resonV="售卖HTTP后台失联";
+                    break;
+                case 10:
+                    resonV="售卖出货失败";
+                    break;
+                case 11:
+                    resonV="售卖防盗告警";
+                    break;
             }
             errorRecord=new ErrorRecord();
             errorRecord.setId(""+((postion*8)+postion+i+1));
